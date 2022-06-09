@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "circuits",
+    "contracts",
+    "db",
+    "front-end",
+    "server"
+  ],
+  "version": "0.0.0"
+}

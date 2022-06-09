@@ -1,0 +1,22 @@
+{
+  "name": "zk-coordinape",
+  "version": "1.0.0",
+  "description": "coordinape build using zk-snarks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shakeib98/zk-coordinape.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shakeib98/zk-coordinape/issues"
+  },
+  "homepage": "https://github.com/shakeib98/zk-coordinape#readme",
+  "devDependencies": {
+    "lerna": "^5.1.0"
+  }
+}
