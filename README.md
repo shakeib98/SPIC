@@ -26,7 +26,7 @@ Users can create semaphore identity, the zk part includes the protection of iden
 ### Actors:
 Following are the actors of the system who’ll be performing the actions in the system. Each actor’s scope of access is different and not all actor’s identities are protected through semaphore. 
 
-** Admin **:
+**Admin**:
 Actor is responsible for the following actions:
 - Creating organization
 - Creating circles
@@ -40,13 +40,13 @@ Actor is responsible for the following actions:
 *ADMIN can be a multisig contract as well.
 *ADMIN won’t have to start the epoch in future version of this application 
 
-** Contributor **:
+**Contributor**:
 Role of the contributor is as follows:
 -Contributors will be added by admin in the circle before the start of epoch
 -Contributors will be receiving votes 
 -By the end of epoch, contributors can claim those votes on the blockchain and earn DAI or any token 
 
-** Voter **:
+**Voter**:
 User journey of the voter is the main part of the whole application. The journey is as follow:
 -Voters must NFT of the community to become voter
 -Anyone who holds the NFT can become a voter
@@ -60,13 +60,13 @@ User journey of the voter is the main part of the whole application. The journey
 ### Design:
 Before diving deep into the technical architecture let’s first discuss the public & private parameters of the circuit while building identity commitment and external nullifier for vote.
 
-** Circuit **:
+**Circuit**:
 The purpose of the circuits is:
 1. To verify the semaphore identity of the user
 2. To verify the external nullifer of the vote by proving its existence in the merkle tree
 3. To verify both point 1 and 2 while withdrawing NFT and reward tokens
 
-* identity_nullifier.circom *:
+*identity_nullifier.circom*:
 -Private parameters
     -Identity nullifier
     -Identity trapdoor
@@ -79,7 +79,7 @@ The purpose of the circuits is:
     -Public key of the users
     -Merkle root
 
-* voting_nullifier.circom *:
+*voting_nullifier.circom* :
 -Private parameters:
     -Identity nullifier 
     -Merkle path
@@ -89,7 +89,7 @@ The purpose of the circuits is:
     -Voting nullifier (hash = (circle id , contributor’s pk)
     -Merkle root
 
-** Contract ** :
+**Contract** :
 The purpose of the contract is:
 -To create organization in which circles can be added and contributors can be added
 -Functionality to submit the voting commitment 
@@ -105,18 +105,18 @@ Some contracts:
 
 ### System Design:
 
-[System Design](design.png)
+![System Design](design.png)
 
-** Relayer **:
+**Relayer**:
 To send private transactions to the smart contract of voting, and claiming NFT by the voters. Relayers are not decentralized yet, but in future much better design can be implemented to reduce the dependency to execute private transactions. 
 
-** Smart contract **:
+**Smart contract**:
 As described in above section.
 
-** Indexing **:
+**Indexing**:
 For indexing, in the MVP version local storage of the browser will be used to store the state of users and voters. In the extended version, a subgraph can be deployed to listen to the events emitted by the smart contract.
 
-** Circuits **:
+**Circuits**:
 As described in above section.
 
 ## Out of Scope:
