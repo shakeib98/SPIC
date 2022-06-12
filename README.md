@@ -105,7 +105,7 @@ Some contracts:
 
 ### System Design:
 
-(design.png)
+[System Design](design.png)
 
 ** Relayer **:
 To send private transactions to the smart contract of voting, and claiming NFT by the voters. Relayers are not decentralized yet, but in future much better design can be implemented to reduce the dependency to execute private transactions. 
