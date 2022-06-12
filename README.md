@@ -33,29 +33,29 @@ Actor is responsible for the following actions:
 - Adding contributors for whom people can vote for
     -This is same as it is done in coordinape. People can vouch in for people in the discord channel. And from there admin can collect the data and add contributors to the project
 -Adding funds to the contract in order to execute the payment. Let’s say you have 100 DAI in your fund for that circle. Now if one voter is joining that circle so the vote weight will be 100 DAI (Total fund / no of voters = Per voter token allocation to vote)
--Specifying the epoch time
--Starting the epoch
--Specifying the voter’s incentivization allocation in the token pool
+- Specifying the epoch time
+- Starting the epoch
+- Specifying the voter’s incentivization allocation in the token pool
 
 *ADMIN can be a multisig contract as well.
 *ADMIN won’t have to start the epoch in future version of this application 
 
 **Contributor**:
 Role of the contributor is as follows:
--Contributors will be added by admin in the circle before the start of epoch
--Contributors will be receiving votes 
--By the end of epoch, contributors can claim those votes on the blockchain and earn DAI or any token 
+- Contributors will be added by admin in the circle before the start of epoch
+- Contributors will be receiving votes 
+- By the end of epoch, contributors can claim those votes on the blockchain and earn DAI or any token 
 
 **Voter**:
 User journey of the voter is the main part of the whole application. The journey is as follow:
--Voters must NFT of the community to become voter
--Anyone who holds the NFT can become a voter
--The way anyone can become the voter is as follows:
-    -Voter first need to select to which circle he’ll be voting in
-    -Identity of the voters will be made using semaphore. 
-    -Identity commitment will be made. Details will be discussed in the Design part of the document
--Voters can vote to the contributors by making external nullifier of that contributor and circle
--Upon the finishing of epoch, voter can provide the proof that he has actually voted and his identity existed in the semaphore, he then can claim the NFT back + some incentive token to participate in the voting mechanism
+- Voters must NFT of the community to become voter
+- Anyone who holds the NFT can become a voter
+- The way anyone can become the voter is as follows:
+    - Voter first need to select to which circle he’ll be voting in
+    - Identity of the voters will be made using semaphore. 
+    - Identity commitment will be made. Details will be discussed in the Design part of the document
+- Voters can vote to the contributors by making external nullifier of that contributor and circle
+- Upon the finishing of epoch, voter can provide the proof that he has actually voted and his identity existed in the semaphore, he then can claim the NFT back + some incentive token to participate in the voting mechanism
 
 ### Design:
 Before diving deep into the technical architecture let’s first discuss the public & private parameters of the circuit while building identity commitment and external nullifier for vote.
@@ -67,41 +67,41 @@ The purpose of the circuits is:
 3. To verify both point 1 and 2 while withdrawing NFT and reward tokens
 
 *identity_nullifier.circom*:
--Private parameters
-    -Identity nullifier
-    -Identity trapdoor
-    -Secret 
-    -Merkle path
-    -Path indices
--Public parameters
-    -NFT id
-    -NFT contract address
-    -Public key of the users
-    -Merkle root
+- Private parameters
+    - Identity nullifier
+    - Identity trapdoor
+    - Secret 
+    - Merkle path
+    - Path indices
+- Public parameters
+    - NFT id
+    - NFT contract address
+    - Public key of the users
+    - Merkle root
 
 *voting_nullifier.circom* :
--Private parameters:
-    -Identity nullifier 
-    -Merkle path
-    -Path indices
--Public parameters:
-    -Identity commitment
-    -Voting nullifier (hash = (circle id , contributor’s pk)
-    -Merkle root
+- Private parameters:
+    - Identity nullifier 
+    - Merkle path
+    - Path indices
+- Public parameters:
+    - Identity commitment
+    - Voting nullifier (hash = (circle id , contributor’s pk)
+    - Merkle root
 
 **Contract** :
 The purpose of the contract is:
--To create organization in which circles can be added and contributors can be added
--Functionality to submit the voting commitment 
--Handling the voting weight as per the allocated match fund
--To behave as an escrow where people can deposit NFT 
--To make sure voting starts and ends at the right epoch time and ensure the security as well
+- To create organization in which circles can be added and contributors can be added
+- Functionality to submit the voting commitment 
+- Handling the voting weight as per the allocated match fund
+- To behave as an escrow where people can deposit NFT 
+- To make sure voting starts and ends at the right epoch time and ensure the security as well
 
 Some contracts:
-1.Semaphore (existing contracts will be used after making some additional changes)
-2.Token (Mock ERC20 token)
-3.NFT (Mock ERC721 token)
-4.Verifier contract (groth16 verifier contract)
+1. Semaphore (existing contracts will be used after making some additional changes)
+2. Token (Mock ERC20 token)
+3. NFT (Mock ERC721 token)
+4. Verifier contract (groth16 verifier contract)
 
 ### System Design:
 
@@ -120,9 +120,9 @@ For indexing, in the MVP version local storage of the browser will be used to st
 As described in above section.
 
 ## Out of Scope:
--Resolving off-chain collusion issues
--Resolving the selection of members through vouching process on discord
--There’s a limitation right now on how many members can vote, in future it has to be generalized
+- Resolving off-chain collusion issues
+- Resolving the selection of members through vouching process on discord
+- There’s a limitation right now on how many members can vote, in future it has to be generalized
 
 ## How to Run:
 //TODO
