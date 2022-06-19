@@ -85,7 +85,6 @@ The purpose of the circuits is:
     - Merkle path
     - Path indices
 - Public parameters:
-    - Identity commitment
     - Voting nullifier (hash = (circle id , contributor’s pk)
     - Merkle root
 

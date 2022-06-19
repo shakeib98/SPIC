@@ -18,5 +18,6 @@
   "homepage": "https://github.com/shakeib98/zk-coordinape#readme",
   "devDependencies": {
     "lerna": "^5.1.0"
-  }
+  },
+  "dependencies": {}
 }

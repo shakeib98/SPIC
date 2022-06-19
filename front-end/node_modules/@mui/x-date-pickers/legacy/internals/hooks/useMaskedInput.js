@@ -1,0 +1,107 @@
+import _extends from "@babel/runtime/helpers/esm/extends";
+import _slicedToArray from "@babel/runtime/helpers/esm/slicedToArray";
+import * as React from 'react';
+import { useRifm } from 'rifm';
+import { useUtils } from './useUtils';
+import { maskedDateFormatter, getDisplayDate, checkMaskIsValidForCurrentFormat, getMaskFromCurrentFormat } from '../utils/text-field-helper';
+export var useMaskedInput = function useMaskedInput(_ref) {
+  var _ref$acceptRegex = _ref.acceptRegex,
+      acceptRegex = _ref$acceptRegex === void 0 ? /[\d]/gi : _ref$acceptRegex,
+      disabled = _ref.disabled,
+      disableMaskedInput = _ref.disableMaskedInput,
+      ignoreInvalidInputs = _ref.ignoreInvalidInputs,
+      inputFormat = _ref.inputFormat,
+      inputProps = _ref.inputProps,
+      label = _ref.label,
+      mask = _ref.mask,
+      onChange = _ref.onChange,
+      rawValue = _ref.rawValue,
+      readOnly = _ref.readOnly,
+      rifmFormatter = _ref.rifmFormatter,
+      TextFieldProps = _ref.TextFieldProps,
+      validationError = _ref.validationError;
+  var utils = useUtils();
+  var formatHelperText = utils.getFormatHelperText(inputFormat);
+
+  var _React$useMemo = React.useMemo(function () {
+    // formatting of dates is a quite slow thing, so do not make useless .format calls
+    if (disableMaskedInput) {
+      return {
+        shouldUseMaskedInput: false,
+        maskToUse: ''
+      };
+    }
+
+    var computedMaskToUse = getMaskFromCurrentFormat(mask, inputFormat, acceptRegex, utils);
+    return {
+      shouldUseMaskedInput: checkMaskIsValidForCurrentFormat(computedMaskToUse, inputFormat, acceptRegex, utils),
+      maskToUse: computedMaskToUse
+    };
+  }, [acceptRegex, disableMaskedInput, inputFormat, mask, utils]),
+      shouldUseMaskedInput = _React$useMemo.shouldUseMaskedInput,
+      maskToUse = _React$useMemo.maskToUse;
+
+  var formatter = React.useMemo(function () {
+    return shouldUseMaskedInput && maskToUse ? maskedDateFormatter(maskToUse, acceptRegex) : function (st) {
+      return st;
+    };
+  }, [acceptRegex, maskToUse, shouldUseMaskedInput]); // TODO: Implement with controlled vs uncontrolled `rawValue`
+
+  var parsedValue = rawValue === null ? null : utils.date(rawValue); // Track the value of the input
+
+  var _React$useState = React.useState(parsedValue),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      innerInputValue = _React$useState2[0],
+      setInnerInputValue = _React$useState2[1]; // control the input text
+
+
+  var _React$useState3 = React.useState(getDisplayDate(utils, rawValue, inputFormat)),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      innerDisplayedInputValue = _React$useState4[0],
+      setInnerDisplayedInputValue = _React$useState4[1];
+
+  var isAcceptedValue = rawValue === null || utils.isValid(parsedValue);
+
+  if (isAcceptedValue && !utils.isEqual(innerInputValue, parsedValue)) {
+    // When dev set a new valid value, we trust them
+    var newDisplayDate = getDisplayDate(utils, rawValue, inputFormat);
+    setInnerInputValue(parsedValue);
+    setInnerDisplayedInputValue(newDisplayDate);
+  }
+
+  var handleChange = function handleChange(text) {
+    var finalString = text === '' || text === mask ? '' : text;
+    setInnerDisplayedInputValue(finalString);
+    var date = finalString === null ? null : utils.parse(finalString, inputFormat);
+
+    if (ignoreInvalidInputs && !utils.isValid(date)) {
+      return;
+    }
+
+    setInnerInputValue(date);
+    onChange(date, finalString || undefined);
+  };
+
+  var rifmProps = useRifm({
+    value: innerDisplayedInputValue,
+    onChange: handleChange,
+    format: rifmFormatter || formatter
+  });
+  var inputStateArgs = shouldUseMaskedInput ? rifmProps : {
+    value: innerDisplayedInputValue,
+    onChange: function onChange(event) {
+      handleChange(event.currentTarget.value);
+    }
+  };
+  return _extends({
+    label: label,
+    disabled: disabled,
+    error: validationError,
+    inputProps: _extends({}, inputStateArgs, {
+      disabled: disabled,
+      placeholder: formatHelperText,
+      readOnly: readOnly,
+      type: shouldUseMaskedInput ? 'tel' : 'text'
+    }, inputProps)
+  }, TextFieldProps);
+};

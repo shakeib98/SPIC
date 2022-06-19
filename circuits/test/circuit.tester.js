@@ -21,6 +21,8 @@ describe("SnakeAndLadder", function () {
 
         console.log(circuit)
 
+        
+
         // const INPUT =
         // {
         //     "diceTurns": [6,1,1,1,1,3,4,1],
