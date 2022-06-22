@@ -25,6 +25,6 @@ snarkjs zkey contribute ./circuit_0000.zkey ./circuit_final.zkey --name="1st Con
 snarkjs zkey export verificationkey ./circuit_final.zkey ./verification_key.json
 
 # # generate solidity contract
-snarkjs zkey export solidityverifier ./circuit_final.zkey ./verifier.sol
+snarkjs zkey export solidityverifier ./circuit_final.zkey ../../contracts/contracts/verifier/verifierVc.sol
 
 # cd ../..

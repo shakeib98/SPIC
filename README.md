@@ -74,10 +74,7 @@ The purpose of the circuits is:
     - Merkle path
     - Path indices
 - Public parameters
-    - NFT id
-    - NFT contract address
-    - Public key of the users
-    - Merkle root
+    - none
 
 *voting_nullifier.circom* :
 - Private parameters:
@@ -85,8 +82,8 @@ The purpose of the circuits is:
     - Merkle path
     - Path indices
 - Public parameters:
-    - Voting nullifier (hash = (circle id , contributor’s pk)
-    - Merkle root
+    - circle_id
+    - pk
 
 **Contract** :
 The purpose of the contract is:

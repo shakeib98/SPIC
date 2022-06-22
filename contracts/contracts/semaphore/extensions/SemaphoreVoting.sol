@@ -1,40 +1,25 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "../interfaces/ISemaphoreVoting.sol";
-import "../base/SemaphoreCore.sol";
 import "../base/SemaphoreGroups.sol";
+import "../interfaces/IVerifier.sol";
+import "../interfaces/IVerifierIC.sol";
 
-/// @title Semaphore voting contract.
-/// @dev The following code allows you to create polls, add voters and allow them to vote anonymously.
-contract SemaphoreVoting is ISemaphoreVoting, SemaphoreCore, SemaphoreGroups {
-    
-    address public VERIFIER_IDENTITY;
+contract SemaphoreVoting is SemaphoreGroups {
+    address public VERIFIER_IDENTITY = 0xC71e5bB4515e9520c9dAD91423738394f104EeCd;
 
-    address public VERIFIER_VOTE;
+    address public VERIFIER_VOTE = 0xeE2D932bb05E10a710944E94d8AA58c2873ab173;
 
-    /// @dev Gets a poll id and returns the poll data.
-    mapping(uint256 => Poll) internal polls;
-
-    constructor() {
-        require(
-            depths.length == verifierAddresses.length,
-            "SemaphoreVoting: parameters lists does not have the same length"
-        );
-
-        for (uint8 i = 0; i < depths.length; i++) {
-            verifiers[depths[i]] = IVerifier(verifierAddresses[i]);
-        }
+    struct Poll {
+        uint256 matchAmount;
+        uint256 startEpoch;
+        uint256 endEpoch;
+        address coordinator;
+        uint8 activeContributorsCount;
     }
 
-    /// @dev Checks if the poll coordinator is the transaction sender.
-    /// @param pollId: Id of the poll.
-    modifier onlyCoordinator(uint256 pollId) {
-        require(polls[pollId].coordinator == _msgSender(), "SemaphoreVoting: caller is not the poll coordinator");
-        _;
-    }
+    mapping(uint256 => Poll) public polls;
 
-    /// @dev See {ISemaphoreVoting-createPoll}.
     function createPoll(
         uint256 pollId,
         address coordinator,
@@ -42,8 +27,7 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreCore, SemaphoreGroups {
         uint256 startEpochTime,
         uint256 endEpochTime,
         uint8 depth
-    ) public override {
-        require(address(verifiers[depth]) != address(0), "SemaphoreVoting: depth value is not supported");
+    ) internal {
 
         _createGroup(pollId, depth, 0); //both of the trees are initialized
 
@@ -58,43 +42,52 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreCore, SemaphoreGroups {
         poll.endEpoch = endEpochTime;
 
         polls[pollId] = poll;
-
-        emit PollCreated(pollId, coordinator, matchAmountPoll, startEpochTime, endEpochTime);
     }
 
-    /// @dev See {ISemaphoreVoting-addVoter}.
-    function addVoter(uint256 pollId, uint256 identityCommitment) public override {
+    function castVote(
+        uint256 mRootIc,
+        uint256 votingCommitment,
+        uint256 _pollId,
+        uint256[8] calldata proofIc
+    ) internal {
+        Poll memory poll = polls[_pollId];
 
-        _addMember(pollId, identityCommitment);
+        _addVote(_pollId, votingCommitment);
+
+        _verifyProofIC(mRootIc, proofIc);
+
+        poll.activeContributorsCount++;
     }
 
-    //TODO
-    // /// @dev See {ISemaphoreVoting-castVote}.
-    // function castVote(
-    //     bytes32 vote,
-    //     uint256 nullifierHash,
-    //     uint256 pollId,
-    //     uint256[4] calldata proofIc,
-    //     uint256[4] calldata 
-    // ) public override {
-    //     Poll memory poll = polls[pollId];
+    function _verifyProofIC(uint256 mRootIc, uint256[8] calldata proofIc)
+        internal
+        returns (bool r)
+    {
+        r = IVerifierIC(VERIFIER_IDENTITY).verifyProof(
+            [proofIc[0], proofIc[1]],
+            [[proofIc[2], proofIc[3]], [proofIc[4], proofIc[5]]],
+            [proofIc[6], proofIc[7]],
+            [mRootIc]
+        );
+    }
 
-    //     _addVote(pollId,nullifierHash);
+    function _verifyProofVC(
+        uint256 votingCommitment,
+        uint256 mRootVc,
+        uint256 pollId,
+        address pkContributor,
+        uint256[8] calldata proofVc
+    ) internal returns (bool r) {
+        require(
+            vcValidity[votingCommitment],
+            "Voting and identity commitment does not exist"
+        );
 
-    //     uint8 depth = getDepth(pollId);
-    //     uint256 root = getRoot(pollId);
-
-
-    //     _verifyProof(vote, root, nullifierHash, pollId, proof, verifier);
-    //     //add the voting verifier method
-
-    //     // Prevent double-voting (nullifierHash = hash(pollId + identityNullifier)).
-    //     _saveNullifierHash(nullifierHash);
-
-    //     emit VoteAdded(pollId, vote);
-    // }
-
-    // function addVote(uint256 pollId, uint256 externalNullifier) public override {
-    //     _addVote(pollId, externalNullifier);
-    // }
+        r = IVerifier(VERIFIER_VOTE).verifyProof(
+            [proofVc[0], proofVc[1]],
+            [[proofVc[2], proofVc[3]], [proofVc[4], proofVc[5]]],
+            [proofVc[6], proofVc[7]],
+            [votingCommitment, mRootVc, pollId, uint256(uint160(address(pkContributor)))] //to make array unified
+        );
+    }
 }

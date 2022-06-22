@@ -12,7 +12,9 @@
     "chai": "^4.3.6",
     "circom_tester": "0.0.12",
     "circomlib": "^2.0.3",
+    "circomlibjs": "^0.1.6",
     "ffjavascript": "^0.2.55",
+    "hardhat": "^2.9.9",
     "path": "^0.12.7"
   }
 }

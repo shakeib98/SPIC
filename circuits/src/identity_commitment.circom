@@ -10,20 +10,20 @@ template IdentityCommitmentGenerator(nLevels) {
     signal input merklePath[nLevels];
     signal input pathIndices[nLevels];
 
-    signal input nftId;
-    signal input nftAddress;
+    // signal input nftId;
+    // signal input nftAddress;
 
-    signal output identityCommitmentHashed;
     signal output mRoot;
 
+    signal identityCommitmentHashed;
     // GENERATE IC
-    component identityCommitmentHasher = Poseidon(5);
+    component identityCommitmentHasher = Poseidon(3);
 
     identityCommitmentHasher.inputs[0] <== identityNullifier;
     identityCommitmentHasher.inputs[1] <== identityTrapdoor;
     identityCommitmentHasher.inputs[2] <== secret;
-    identityCommitmentHasher.inputs[3] <== nftId;
-    identityCommitmentHasher.inputs[4] <== nftAddress;
+    // identityCommitmentHasher.inputs[3] <== nftId;
+    // identityCommitmentHasher.inputs[4] <== nftAddress;
 
     //IC CONSTRAINT
     identityCommitmentHashed <== identityCommitmentHasher.out;
@@ -43,4 +43,4 @@ template IdentityCommitmentGenerator(nLevels) {
 
 }
 
-component main{public [nftId, nftAddress]} = IdentityCommitmentGenerator(3);
+component main = IdentityCommitmentGenerator(3);
