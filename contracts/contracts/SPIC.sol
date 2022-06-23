@@ -73,12 +73,11 @@ contract SPIC is SemaphoreVoting, ISPIC {
     function createCircle(
         uint256 _id,
         uint256 _matchAmount,
-        uint256 _startEpoch,
         uint256 _endEpoch
     ) external override{
         require(msg.sender == OWNER);
         require(
-            _startEpoch > block.timestamp && _startEpoch != _endEpoch,
+            _endEpoch > block.timestamp,
             "Invalid EPOCH value"
         );
 
@@ -86,14 +85,14 @@ contract SPIC is SemaphoreVoting, ISPIC {
             _id,
             msg.sender,
             _matchAmount,
-            _startEpoch,
+            block.timestamp,
             _endEpoch,
-            MAX_LEAVES
+            3
         );
 
         IERC20(mockToken).transferFrom(msg.sender, address(this), _matchAmount);
 
-        emit CircleCreated(_id, _matchAmount, _startEpoch, _endEpoch);
+        emit CircleCreated(_id, _matchAmount, block.timestamp, _endEpoch);
     }
 
     function addContributors(uint256 _id, address[] calldata _addresses)
@@ -113,7 +112,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 identityCommitment,
         uint256 _tokenId
     ) external override{
-        require(polls[_id].startEpoch > block.timestamp);
+        require(polls[_id].startEpoch < block.timestamp);
         IERC721Transfer(nftToken).transferFrom(msg.sender, address(this), _tokenId);
         _addMember(_id, identityCommitment);
 
@@ -147,7 +146,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
         address nftAddress,
         uint256[8] calldata proofVc
     ) external override{
-        require(polls[pollId].endEpoch < block.timestamp);
+        require(polls[pollId].endEpoch < block.timestamp, "EPOCH NOT ENDED");
         require(nftAddress == nftToken);
         address owner = IERC721Transfer(nftAddress).ownerOf(nftId);
         require(owner == address(this));
@@ -161,9 +160,9 @@ contract SPIC is SemaphoreVoting, ISPIC {
 
         address user = msg.sender;
 
-        uint256 perVoterRewardAmount = (((polls[pollId].matchAmount *
-            votersIncentive) / polls[pollId].activeContributorsCount) * 1000);
-        IERC20(mockToken).transfer(user, perVoterRewardAmount);
+
+        uint256 reward = (polls[pollId].matchAmount * votersIncentive) / (polls[pollId].activeContributorsCount * 1000); 
+        IERC20(mockToken).transfer(user, reward);
         IERC721Transfer(nftAddress).transfer(user, nftId);
 
         emit NFTWithdrawn(user, nftId);
@@ -173,14 +172,14 @@ contract SPIC is SemaphoreVoting, ISPIC {
         require(contributors[pollId][msg.sender].status);
         require(polls[pollId].endEpoch < block.timestamp);
 
-        uint256 perVoterRewardAmount = polls[pollId].matchAmount -
-            ((polls[pollId].matchAmount * votersIncentive) / 1000);
+        uint256 afterAmount = polls[pollId].matchAmount - ((polls[pollId].matchAmount*votersIncentive)/1000);
 
-        uint256 derivedCompensation = perVoterRewardAmount *
-            contributors[pollId][msg.sender].voteCount;
+        uint256 perUserVote = afterAmount / polls[pollId].activeContributorsCount;
 
-        IERC20(mockToken).transfer(msg.sender, derivedCompensation);
+        uint256 reward = perUserVote * contributors[pollId][msg.sender].voteCount;
 
-        emit CompensationReceived(msg.sender, pollId, derivedCompensation);
+        IERC20(mockToken).transfer(msg.sender, reward);
+
+        emit CompensationReceived(msg.sender, pollId, reward);
     }
 }

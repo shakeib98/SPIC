@@ -28,7 +28,7 @@ export interface ISPICInterface extends utils.Interface {
     "addContributors(uint256,address[])": FunctionFragment;
     "becomeVoter(uint256,uint256,uint256)": FunctionFragment;
     "castVoteExternal(address,uint256,uint256,uint256,uint256[8])": FunctionFragment;
-    "createCircle(uint256,uint256,uint256,uint256)": FunctionFragment;
+    "createCircle(uint256,uint256,uint256)": FunctionFragment;
     "receiveCompensation(uint256)": FunctionFragment;
     "withdrawNFT(uint256,uint256,uint256,uint256,address,address,uint256[8])": FunctionFragment;
   };
@@ -68,7 +68,6 @@ export interface ISPICInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "createCircle",
     values: [
-      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
@@ -171,7 +170,6 @@ export interface ISPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -218,7 +216,6 @@ export interface ISPIC extends BaseContract {
   createCircle(
     _id: PromiseOrValue<BigNumberish>,
     _matchAmount: PromiseOrValue<BigNumberish>,
-    _startEpoch: PromiseOrValue<BigNumberish>,
     _endEpoch: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -265,7 +262,6 @@ export interface ISPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -315,7 +311,6 @@ export interface ISPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -363,7 +358,6 @@ export interface ISPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

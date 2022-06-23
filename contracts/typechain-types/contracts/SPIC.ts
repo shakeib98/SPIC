@@ -38,7 +38,7 @@ export interface SPICInterface extends utils.Interface {
     "becomeVoter(uint256,uint256,uint256)": FunctionFragment;
     "castVoteExternal(address,uint256,uint256,uint256,uint256[8])": FunctionFragment;
     "contributors(uint256,address)": FunctionFragment;
-    "createCircle(uint256,uint256,uint256,uint256)": FunctionFragment;
+    "createCircle(uint256,uint256,uint256)": FunctionFragment;
     "getDepth(uint256)": FunctionFragment;
     "getNumberOfLeaves(uint256)": FunctionFragment;
     "getRoot(uint256)": FunctionFragment;
@@ -124,7 +124,6 @@ export interface SPICInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "createCircle",
     values: [
-      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
@@ -406,7 +405,6 @@ export interface SPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -529,7 +527,6 @@ export interface SPIC extends BaseContract {
   createCircle(
     _id: PromiseOrValue<BigNumberish>,
     _matchAmount: PromiseOrValue<BigNumberish>,
-    _startEpoch: PromiseOrValue<BigNumberish>,
     _endEpoch: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -652,7 +649,6 @@ export interface SPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -845,7 +841,6 @@ export interface SPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -949,7 +944,6 @@ export interface SPIC extends BaseContract {
     createCircle(
       _id: PromiseOrValue<BigNumberish>,
       _matchAmount: PromiseOrValue<BigNumberish>,
-      _startEpoch: PromiseOrValue<BigNumberish>,
       _endEpoch: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

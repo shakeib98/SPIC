@@ -98,11 +98,6 @@ const _abi = [
       },
       {
         internalType: "uint256",
-        name: "_startEpoch",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
         name: "_endEpoch",
         type: "uint256",
       },

@@ -6,7 +6,6 @@ interface ISPIC {
     function createCircle(
         uint256 _id,
         uint256 _matchAmount,
-        uint256 _startEpoch,
         uint256 _endEpoch
     ) external;
 

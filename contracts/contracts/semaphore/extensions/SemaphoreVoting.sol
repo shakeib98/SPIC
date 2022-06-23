@@ -4,11 +4,14 @@ pragma solidity ^0.8.4;
 import "../base/SemaphoreGroups.sol";
 import "../interfaces/IVerifier.sol";
 import "../interfaces/IVerifierIC.sol";
+import "hardhat/console.sol";
 
 contract SemaphoreVoting is SemaphoreGroups {
-    address public VERIFIER_IDENTITY = 0xC71e5bB4515e9520c9dAD91423738394f104EeCd;
+    address public VERIFIER_IDENTITY = 0xeE2D932bb05E10a710944E94d8AA58c2873ab173; //TEST NET ADDRESS
 
-    address public VERIFIER_VOTE = 0xeE2D932bb05E10a710944E94d8AA58c2873ab173;
+    address public VERIFIER_VOTE = 0xC71e5bB4515e9520c9dAD91423738394f104EeCd; //TEST NET ADDRESS
+
+    uint256 internal ZERO_VALUE = 21663839004416932945382355908790599225266501822907911457504978515578255421292;
 
     struct Poll {
         uint256 matchAmount;
@@ -27,9 +30,10 @@ contract SemaphoreVoting is SemaphoreGroups {
         uint256 startEpochTime,
         uint256 endEpochTime,
         uint8 depth
-    ) internal {
+    ) internal {    
+        // console.log("Z=====================>",ZERO_VALUE);
 
-        _createGroup(pollId, depth, 0); //both of the trees are initialized
+        _createGroup(pollId, depth, ZERO_VALUE); //both of the trees are initialized
 
         Poll memory poll;
 
@@ -50,13 +54,14 @@ contract SemaphoreVoting is SemaphoreGroups {
         uint256 _pollId,
         uint256[8] calldata proofIc
     ) internal {
-        Poll memory poll = polls[_pollId];
 
         _addVote(_pollId, votingCommitment);
 
         _verifyProofIC(mRootIc, proofIc);
 
-        poll.activeContributorsCount++;
+        polls[_pollId].activeContributorsCount = polls[_pollId].activeContributorsCount + 1;
+
+        console.log(polls[_pollId].activeContributorsCount );
     }
 
     function _verifyProofIC(uint256 mRootIc, uint256[8] calldata proofIc)

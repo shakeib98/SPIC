@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import {SNARK_SCALAR_FIELD} from "./SemaphoreConstants.sol";
 import "@zk-kit/incremental-merkle-tree.sol/contracts/IncrementalBinaryTree.sol";
+import "hardhat/console.sol";
 
 /// @title Semaphore groups contract.
 /// @dev The following code allows you to create groups, add and remove members.
@@ -34,7 +35,7 @@ abstract contract SemaphoreGroups {
             getDepth(groupId) == 0,
             "SemaphoreGroups: group already exists"
         );
-
+        // console.log("ZEEE ========================> ", zeroValue);
         groups[groupId].init(depth, zeroValue);
 
         votersGroup[groupId].init(depth, zeroValue);

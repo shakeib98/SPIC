@@ -8,7 +8,7 @@ interface Proof {
   c: [BigNumberish, BigNumberish];
 }
 
-// export const unstringifyBigInts = (o) => {
+// export const unstringifyBigInts = (o:any) => {
 //   if (typeof o == "string" && /^[0-9]+$/.test(o)) {
 //     return bigInt(o);
 //   } else if (typeof o == "string" && /^0x[0-9a-fA-F]+$/.test(o)) {
