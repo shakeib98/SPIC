@@ -59,27 +59,25 @@ contract SPIC is SemaphoreVoting, ISPIC {
     constructor(
         address _mockToken,
         address _nftToken,
-        address _owner,
         address _relayer,
         uint256 _votersIncentive
-    ) {
+    ) public {
+
         votersIncentive = _votersIncentive;
         mockToken = _mockToken;
         nftToken = _nftToken;
-        OWNER = _owner;
         RELAYER = _relayer;
+
+
     }
 
     function createCircle(
         uint256 _id,
         uint256 _matchAmount,
         uint256 _endEpoch
-    ) external override{
-        require(msg.sender == OWNER);
-        require(
-            _endEpoch > block.timestamp,
-            "Invalid EPOCH value"
-        );
+    ) external override {
+        require(polls[_id].coordinator != address(0), "Organization was already created");
+        require(_endEpoch > block.timestamp, "Invalid EPOCH value");
 
         createPoll(
             _id,
@@ -96,9 +94,10 @@ contract SPIC is SemaphoreVoting, ISPIC {
     }
 
     function addContributors(uint256 _id, address[] calldata _addresses)
-        external override
+        external
+        override
     {
-        require(msg.sender == OWNER);
+        require(polls[_id].coordinator == msg.sender);
         require(polls[_id].endEpoch > block.timestamp);
         for (uint8 i = 0; i < _addresses.length; i++) {
             contributors[_id][_addresses[i]].status = true;
@@ -111,12 +110,22 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 _id,
         uint256 identityCommitment,
         uint256 _tokenId
-    ) external override{
+    ) external override {
         require(polls[_id].startEpoch < block.timestamp);
-        IERC721Transfer(nftToken).transferFrom(msg.sender, address(this), _tokenId);
+        IERC721Transfer(nftToken).transferFrom(
+            msg.sender,
+            address(this),
+            _tokenId
+        );
         _addMember(_id, identityCommitment);
 
-        emit VoterAdded(msg.sender, _id, identityCommitment, _tokenId, voterIndex++);
+        emit VoterAdded(
+            msg.sender,
+            _id,
+            identityCommitment,
+            _tokenId,
+            voterIndex++
+        );
     }
 
     function castVoteExternal(
@@ -125,7 +134,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 votingCommitment,
         uint256 _pollId,
         uint256[8] calldata proofIc
-    ) external override{
+    ) external override {
         require(polls[_pollId].endEpoch > block.timestamp);
         require(contributors[_pollId][pk].status);
         require(msg.sender == RELAYER);
@@ -145,7 +154,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
         address pkContributor,
         address nftAddress,
         uint256[8] calldata proofVc
-    ) external override{
+    ) external override {
         require(polls[pollId].endEpoch < block.timestamp, "EPOCH NOT ENDED");
         require(nftAddress == nftToken);
         address owner = IERC721Transfer(nftAddress).ownerOf(nftId);
@@ -160,23 +169,26 @@ contract SPIC is SemaphoreVoting, ISPIC {
 
         address user = msg.sender;
 
-
-        uint256 reward = (polls[pollId].matchAmount * votersIncentive) / (polls[pollId].activeContributorsCount * 1000); 
+        uint256 reward = (polls[pollId].matchAmount * votersIncentive) /
+            (polls[pollId].activeContributorsCount * 1000);
         IERC20(mockToken).transfer(user, reward);
         IERC721Transfer(nftAddress).transfer(user, nftId);
 
         emit NFTWithdrawn(user, nftId);
     }
 
-    function receiveCompensation(uint256 pollId) external override{
+    function receiveCompensation(uint256 pollId) external override {
         require(contributors[pollId][msg.sender].status);
         require(polls[pollId].endEpoch < block.timestamp);
 
-        uint256 afterAmount = polls[pollId].matchAmount - ((polls[pollId].matchAmount*votersIncentive)/1000);
+        uint256 afterAmount = polls[pollId].matchAmount -
+            ((polls[pollId].matchAmount * votersIncentive) / 1000);
 
-        uint256 perUserVote = afterAmount / polls[pollId].activeContributorsCount;
+        uint256 perUserVote = afterAmount /
+            polls[pollId].activeContributorsCount;
 
-        uint256 reward = perUserVote * contributors[pollId][msg.sender].voteCount;
+        uint256 reward = perUserVote *
+            contributors[pollId][msg.sender].voteCount;
 
         IERC20(mockToken).transfer(msg.sender, reward);
 

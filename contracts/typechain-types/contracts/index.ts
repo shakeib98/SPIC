@@ -10,3 +10,4 @@ export type { semaphore };
 import type * as verifier from "./verifier";
 export type { verifier };
 export type { SPIC } from "./SPIC";
+export type { SPICFactory } from "./SPICFactory";

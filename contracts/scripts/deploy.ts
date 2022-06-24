@@ -98,16 +98,14 @@ async function deploySPIC() {
   const incrementalBinaryTreeLib = await IncrementalBinaryTreeLibFactory.deploy()
 
   await incrementalBinaryTreeLib.deployed()
-s
+
   const ContractFactory = await ethers.getContractFactory("SPIC", {
     libraries: {
       IncrementalBinaryTree: incrementalBinaryTreeLib.address
     }
   })
 
-  console.log(ContractFactory.signer)
-
-  const contract = await ContractFactory.deploy(ERC20, ERC721, "0x2B2a7bd0b57298005EFeb8ddAE0D6f7037066E45", "0xC820F9d9b6F2F1226Eeb63d9A67bD285Be4829B8", 50)
+  const contract = await ContractFactory.deploy(ERC20, ERC721, "0xC820F9d9b6F2F1226Eeb63d9A67bD285Be4829B8", 50)
 
   await contract.deployed()
 

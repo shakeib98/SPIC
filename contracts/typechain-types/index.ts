@@ -50,6 +50,8 @@ export type { IVerifierIC } from "./contracts/semaphore/interfaces/IVerifierIC";
 export { IVerifierIC__factory } from "./factories/contracts/semaphore/interfaces/IVerifierIC__factory";
 export type { SPIC } from "./contracts/SPIC";
 export { SPIC__factory } from "./factories/contracts/SPIC__factory";
+export type { SPICFactory } from "./contracts/SPICFactory";
+export { SPICFactory__factory } from "./factories/contracts/SPICFactory__factory";
 export type { VerifierIC } from "./contracts/verifier/verifierIc.sol/VerifierIC";
 export { VerifierIC__factory } from "./factories/contracts/verifier/verifierIc.sol/VerifierIC__factory";
 export type { VerifierVC } from "./contracts/verifier/verifierVc.sol/VerifierVC";

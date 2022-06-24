@@ -1,5 +1,5 @@
 import { expect, use } from "chai";
-import { ethers } from "hardhat";
+import { ethers} from "hardhat";
 import { deployContract } from "ethereum-waffle";
 
 import * as ERC20Artifact from "../artifacts/contracts/base/ERC20Mock.sol/MockERC20.json"
@@ -34,7 +34,7 @@ describe("SPIC", function () {
   let SPIC: Contract;
   let poseidonContractDeploy: Contract;
 
-  let CIRCLE_ID = "1"
+  let CIRCLE_ID = ethers.utils.keccak256("XORD-1")
 
   let poseidonJs: any
 
@@ -82,7 +82,6 @@ describe("SPIC", function () {
       },
       signer: admin
     })
-
     SPIC = await SPICFactory.deploy(ERC20.address, ERC721.address, admin.getAddress(), relayer.getAddress(), "50");
 
   });

@@ -41,6 +41,7 @@ build/Release
 contracts/node_modules/
 circuits/node_modules/
 jspm_packages/
+node_modules
 
 # TypeScript v1 declaration files
 typings/
