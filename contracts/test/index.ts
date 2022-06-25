@@ -34,7 +34,7 @@ describe("SPIC", function () {
   let SPIC: Contract;
   let poseidonContractDeploy: Contract;
 
-  let CIRCLE_ID = ethers.utils.keccak256("XORD-1")
+  let CIRCLE_ID = BigNumber.from(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XORD-1")))
 
   let poseidonJs: any
 
@@ -63,10 +63,10 @@ describe("SPIC", function () {
     let verifier1 = await deployContract(admin, VerifierICArtifact)
     let verifier2 = await deployContract(admin, VerifierVCArtifact)
 
-
+    //NEED TO ADD THESE ADDRESSES IN THE SEMAPHORE VOTING
     poseidonContractDeploy = await getPoseidonFactory(2).connect(admin).deploy();
 
-
+    CIRCLE_ID = poseidonJs.F.toObject(poseidonJs([CIRCLE_ID]))
     const IncrementalBinaryTreeLibFactory = await ethers.getContractFactory("IncrementalBinaryTree", {
       libraries: {
         PoseidonT3: poseidonContractDeploy.address
@@ -82,7 +82,7 @@ describe("SPIC", function () {
       },
       signer: admin
     })
-    SPIC = await SPICFactory.deploy(ERC20.address, ERC721.address, admin.getAddress(), relayer.getAddress(), "50");
+    SPIC = await SPICFactory.deploy(ERC20.address, ERC721.address, relayer.getAddress(), "50");
 
   });
 
@@ -146,7 +146,7 @@ describe("SPIC", function () {
 
   it("Case Vote", async () => {
 
-    const VN = poseidonJs.F.toObject([1, CIRCLE_ID, contributor.address])
+    const VN = poseidonJs.F.toObject([1, Number(CIRCLE_ID), contributor.address])
 
     await treeVc.insert(VN)
 
@@ -187,7 +187,7 @@ describe("SPIC", function () {
 
   it("Withdraw NFT", async () => {
 
-    const VN = poseidonJs.F.toObject([1, CIRCLE_ID, contributor.address])
+    const VN = poseidonJs.F.toObject([1, Number(CIRCLE_ID), contributor.address])
 
     let indexVotes = await SPIC.votesIndex()
 

@@ -6,4 +6,3 @@ export * as interfaces from "./interfaces";
 export * as semaphore from "./semaphore";
 export * as verifier from "./verifier";
 export { SPIC__factory } from "./SPIC__factory";
-export { SPICFactory__factory } from "./SPICFactory__factory";

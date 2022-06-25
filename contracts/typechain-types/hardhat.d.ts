@@ -97,10 +97,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SPIC__factory>;
     getContractFactory(
-      name: "SPICFactory",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SPICFactory__factory>;
-    getContractFactory(
       name: "VerifierIC",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.VerifierIC__factory>;
@@ -214,11 +210,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.SPIC>;
-    getContractAt(
-      name: "SPICFactory",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SPICFactory>;
     getContractAt(
       name: "VerifierIC",
       address: string,

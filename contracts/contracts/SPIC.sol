@@ -76,7 +76,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 _matchAmount,
         uint256 _endEpoch
     ) external override {
-        require(polls[_id].coordinator != address(0), "Organization was already created");
+        require(polls[_id].coordinator == address(0), "Organization was already created");
         require(_endEpoch > block.timestamp, "Invalid EPOCH value");
 
         createPoll(
