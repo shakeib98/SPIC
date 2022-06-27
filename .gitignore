@@ -119,3 +119,5 @@ circuits/cache
 circuits/identitycommitment
 circuits/votingnullifier
 
+.gitignore
+
