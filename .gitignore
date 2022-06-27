@@ -104,3 +104,18 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Hardhat 
+contracts/node_modules
+contracts/.env
+# ./contracts/coverage
+# ./contracts/coverage.json
+contracts/typechain-types
+contracts/artifacts
+contracts/cache
+
+#Circuit
+circuits/cache
+circuits/identitycommitment
+circuits/votingnullifier
+

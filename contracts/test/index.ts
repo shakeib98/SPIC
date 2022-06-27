@@ -63,6 +63,8 @@ describe("SPIC", function () {
     let verifier1 = await deployContract(admin, VerifierICArtifact)
     let verifier2 = await deployContract(admin, VerifierVCArtifact)
 
+    // 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
+
     //NEED TO ADD THESE ADDRESSES IN THE SEMAPHORE VOTING
     poseidonContractDeploy = await getPoseidonFactory(2).connect(admin).deploy();
 
@@ -151,6 +153,8 @@ describe("SPIC", function () {
     await treeVc.insert(VN)
 
     let index = await SPIC.voterIndex();
+
+    console.log(index)
 
     const { root, path_elements, path_index } = await tree.path(
       index-1
