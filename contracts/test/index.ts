@@ -1,5 +1,5 @@
 import { expect, use } from "chai";
-import { ethers} from "hardhat";
+import { ethers } from "hardhat";
 import { deployContract } from "ethereum-waffle";
 
 import * as ERC20Artifact from "../artifacts/contracts/base/ERC20Mock.sol/MockERC20.json"
@@ -34,7 +34,29 @@ describe("SPIC", function () {
   let SPIC: Contract;
   let poseidonContractDeploy: Contract;
 
-  let CIRCLE_ID = BigNumber.from(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XORD-1")))
+  let random = Math.floor(Math.random()*1000)
+
+  let CIRCLE_ID = (BigNumber.from(ethers.utils.toUtf8Bytes(`XORD-` + (Math.floor(Math.random()*1000))))).toString()
+
+  let IDENTITY_NULLIFIER = (BigNumber.from(ethers.utils.randomBytes(8))).toString()
+
+  let TRAPDOOR = (BigNumber.from(ethers.utils.randomBytes(8))).toString()
+
+  let SECRET = (BigNumber.from(ethers.utils.randomBytes(8))).toString()
+
+  console.log(CIRCLE_ID, IDENTITY_NULLIFIER, TRAPDOOR, SECRET)
+  
+
+  // let IDENTITY_NULLIFIER = (BigNumber.from([115, 230, 167, 11, 191, 140, 115, 128, 216, 66, 252, 150, 196, 160, 226])).toString()
+
+  // let TRAPDOOR = (BigNumber.from([237, 198, 219, 144, 220, 244, 104, 239, 180, 54, 45, 244, 43, 129, 104])).toString();
+
+  // let SECRET = (BigNumber.from(([85, 89, 252, 220, 56, 68, 134, 43, 242, 150, 122, 195, 18, 225, 130]))).toString()
+
+  // let CIRCLE_ID = "1629029184324433490482"
+  // let IDENTITY_NULLIFIER = "14093479557083725436"
+  // let TRAPDOOR = "15121684268382107221"
+  // let SECRET = "7168293784926328097"
 
   let poseidonJs: any
 
@@ -50,7 +72,6 @@ describe("SPIC", function () {
   };
 
   it("SETUP", async () => {
-
     poseidonJs = await buildPoseidon();
 
     [admin, relayer, user, contributor] = await ethers.getSigners();
@@ -68,7 +89,11 @@ describe("SPIC", function () {
     //NEED TO ADD THESE ADDRESSES IN THE SEMAPHORE VOTING
     poseidonContractDeploy = await getPoseidonFactory(2).connect(admin).deploy();
 
-    CIRCLE_ID = poseidonJs.F.toObject(poseidonJs([CIRCLE_ID]))
+    // CIRCLE_ID = poseidonJs.F.toObject(poseidonJs([CIRCLE_ID]))
+    // IDENTITY_NULLIFIER = poseidonJs.F.toObject(poseidonJs([IDENTITY_NULLIFIER]))
+    // TRAPDOOR = poseidonJs.F.toObject(poseidonJs([TRAPDOOR]))
+    // SECRET = poseidonJs.F.toObject(poseidonJs([SECRET]))
+
     const IncrementalBinaryTreeLibFactory = await ethers.getContractFactory("IncrementalBinaryTree", {
       libraries: {
         PoseidonT3: poseidonContractDeploy.address
@@ -95,13 +120,14 @@ describe("SPIC", function () {
 
     await ERC20.approve(SPIC.address, matchAmount)
 
-    await SPIC.createCircle(CIRCLE_ID, matchAmount, (Math.floor(Date.now() / 1000))+120)
+
+    await SPIC.createCircle(CIRCLE_ID.toString(), matchAmount, (Math.floor(Date.now() / 1000)) + 120)
 
     let balanceAfter = await ERC20.balanceOf(admin.getAddress())
 
-    let totalCheck = balanceBefore - Number(matchAmount)
+    // let totalCheck = balanceBefore - Number(matchAmount)
 
-    expect(totalCheck.toString()).to.be.equal(balanceAfter);
+    // expect(totalCheck.toString()).to.be.equal(balanceAfter);
 
     let circle = await SPIC.polls(CIRCLE_ID)
 
@@ -124,9 +150,10 @@ describe("SPIC", function () {
 
     poseidonJs = await buildPoseidon();
 
-    const IC = poseidonJs.F.toObject(poseidonJs([1, 11, 199]))
+    const IC = poseidonJs.F.toObject(poseidonJs([IDENTITY_NULLIFIER, TRAPDOOR, SECRET]))
 
     await tree.insert(IC);
+
 
     let newERC721User = await ERC721.connect(user)
 
@@ -135,6 +162,8 @@ describe("SPIC", function () {
     let SPICNewUser = await SPIC.connect(user)
 
     await SPICNewUser.becomeVoter(CIRCLE_ID, IC, 1)
+
+    // await SPICNewUser.becomeVoter(CIRCLE_ID, IC, 1)
 
     let newOwner = await newERC721User.ownerOf(1)
 
@@ -147,33 +176,34 @@ describe("SPIC", function () {
   })
 
   it("Case Vote", async () => {
+    poseidonJs = await buildPoseidon();
 
-    const VN = poseidonJs.F.toObject([1, Number(CIRCLE_ID), contributor.address])
+    const VN = poseidonJs.F.toObject(poseidonJs([IDENTITY_NULLIFIER, CIRCLE_ID, contributor.address]))
 
     await treeVc.insert(VN)
 
     let index = await SPIC.voterIndex();
 
-    console.log(index)
-
     const { root, path_elements, path_index } = await tree.path(
-      index-1
+      index - 1
     );
 
-    for(let i=0; i<path_elements.length; i++){
-      path_elements[i] = BigNumber.from(path_elements[i]).toString()
+    for (let i = 0; i < path_elements.length; i++) {
+      path_elements[i] = BigNumber.from((path_elements[i])).toString()
     }
-    
+
     var Input = {
-      "identityNullifier": "1",
-      "identityTrapdoor": "11",
-      "secret": "199",
+      "identityNullifier": IDENTITY_NULLIFIER,
+      "identityTrapdoor": TRAPDOOR,
+      "secret": SECRET,
+      "mRoot": BigNumber.from(root).toString(),
       "merklePath": path_elements,
       "pathIndices": path_index
     }
 
 
-    var { proof, publicSignals } = await groth16.fullProve(Input, path.resolve('/media/shakeib98/zk-coordinape/circuits/identitycommitment/identity_commitment_js/identity_commitment.wasm'), path.resolve('/media/shakeib98/zk-coordinape/circuits/identitycommitment/circuit_final.zkey'));
+    var { proof, publicSignals } = await groth16.fullProve(Input, path.resolve('/media/shakeib98/SPIC/circuits/identitycommitment/identity_commitment_js/identity_commitment.wasm'), path.resolve('/media/shakeib98/SPIC/circuits/identitycommitment/circuit_final.zkey'));
+
     const solProof = {
       a: [proof.pi_a[0], proof.pi_a[1]],
       b: [
@@ -183,38 +213,45 @@ describe("SPIC", function () {
       c: [proof.pi_c[0], proof.pi_c[1]],
     };
 
-    const proofForFunction = [solProof.a[0],solProof.a[1],solProof.b[0][0],solProof.b[0][1],solProof.b[1][0],solProof.b[1][1],solProof.c[0],solProof.c[1]]
+    // // console.log(solProof, BigNumber.from(root))
+
+    const proofForFunction = [solProof.a[0], solProof.a[1], solProof.b[0][0], solProof.b[0][1], solProof.b[1][0], solProof.b[1][1], solProof.c[0], solProof.c[1]]
     let spicRelayer = await SPIC.connect(relayer)
-    await spicRelayer.castVoteExternal(contributor.address, root, VN, CIRCLE_ID, proofForFunction);
-  
-  })
+    await spicRelayer.castVoteExternal(contributor.address, BigNumber.from(root), VN, CIRCLE_ID, proofForFunction);
+
+  })  
 
   it("Withdraw NFT", async () => {
-
-    const VN = poseidonJs.F.toObject([1, Number(CIRCLE_ID), contributor.address])
+    poseidonJs = await buildPoseidon();
+    const VN = poseidonJs.F.toObject(poseidonJs([IDENTITY_NULLIFIER, CIRCLE_ID, contributor.address]))
 
     let indexVotes = await SPIC.votesIndex()
 
     const { root, path_elements, path_index } = await treeVc.path(
-      indexVotes-1
+      indexVotes - 1
     );
 
-    for(let i=0; i<path_elements.length; i++){
+    let rootContract = await SPIC.votersGroup(CIRCLE_ID)
+
+    console.log(rootContract.root , BigNumber.from(root))
+
+    for (let i = 0; i < path_elements.length; i++) {
       path_elements[i] = BigNumber.from(path_elements[i]).toString()
     }
 
 
     var Input = {
-      "identityNullifier": "1",
+      "identityNullifier": IDENTITY_NULLIFIER,
       "merklePath": path_elements,
       "pathIndices": path_index,
-      "circle_id": CIRCLE_ID.toString(),
-      "pk": contributor.address
+      "circle_id": CIRCLE_ID,
+      "pk": contributor.address,
+      "mRoot": BigNumber.from(root).toString()
     }
 
 
-    var { proof, publicSignals } = await groth16.fullProve(Input, path.resolve('/media/shakeib98/zk-coordinape/circuits/votingnullifier/voting_nullifier_js/voting_nullifier.wasm'), path.resolve('/media/shakeib98/zk-coordinape/circuits/votingnullifier/circuit_final.zkey'));
-
+    var { proof, publicSignals } = await groth16.fullProve(Input, path.resolve('/media/shakeib98/SPIC/circuits/votingnullifier/voting_nullifier_js/voting_nullifier.wasm'), path.resolve('/media/shakeib98/SPIC/circuits/votingnullifier/circuit_final.zkey'));
+    // console.log(publicSignals, "VCCCCCCCCCCCCCC")
     const solProof = {
       a: [proof.pi_a[0], proof.pi_a[1]],
       b: [
@@ -225,13 +262,12 @@ describe("SPIC", function () {
     };
     let SPICNewUser = await SPIC.connect(user)
 
-    const proofForFunction = [solProof.a[0],solProof.a[1],solProof.b[0][0],solProof.b[0][1],solProof.b[1][0],solProof.b[1][1],solProof.c[0],solProof.c[1]]
+    const proofForFunction = [solProof.a[0], solProof.a[1], solProof.b[0][0], solProof.b[0][1], solProof.b[1][0], solProof.b[1][1], solProof.c[0], solProof.c[1]]
 
-    await ethers.provider.send("evm_increaseTime",[240])
+    await ethers.provider.send("evm_increaseTime", [240])
     await ethers.provider.send("evm_mine", []);
-    
-    await SPICNewUser.withdrawNFT(1, VN, BigNumber.from( root).toString(), CIRCLE_ID, contributor.address,ERC721.address,proofForFunction);
 
+    await SPICNewUser.withdrawNFT(1, VN, BigNumber.from(root), CIRCLE_ID, contributor.address, ERC721.address, proofForFunction);
     let balanceOfUser = await ERC20.balanceOf(user.address);
 
     expect(balanceOfUser).to.be.equal("5000000000000000000")

@@ -13,7 +13,7 @@ template IdentityCommitmentGenerator(nLevels) {
     // signal input nftId;
     // signal input nftAddress;
 
-    signal output mRoot;
+    signal input mRoot;
 
     signal identityCommitmentHashed;
     // GENERATE IC
@@ -39,8 +39,8 @@ template IdentityCommitmentGenerator(nLevels) {
     }
 
     //MR CONSTRAINT
-    mRoot <== merklePathVerifier.root;
+    mRoot === merklePathVerifier.root;
 
 }
 
-component main = IdentityCommitmentGenerator(3);
+component main {public [mRoot]}= IdentityCommitmentGenerator(3);

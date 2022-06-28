@@ -78,7 +78,7 @@ abstract contract SemaphoreGroups {
             !vcValidity[externalNullifier],
             "SemaphoreGroups: vote already exists"
         );
-
+        console.log("VOTER");
         votersGroup[groupId].insert(externalNullifier);
 
         vcValidity[externalNullifier] = true;

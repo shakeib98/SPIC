@@ -18,6 +18,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
     uint8 public votesIndex = 0;
 
     mapping(uint256 => mapping(address => Contributor)) public contributors;
+    mapping(address => uint256) public nftToAddress;
 
     struct Contributor {
         uint8 voteCount;
@@ -111,6 +112,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 identityCommitment,
         uint256 _tokenId
     ) external override {
+        require(nftToAddress[msg.sender] == 0, "Already a voter");
         require(polls[_id].startEpoch < block.timestamp);
         IERC721Transfer(nftToken).transferFrom(
             msg.sender,
@@ -118,6 +120,8 @@ contract SPIC is SemaphoreVoting, ISPIC {
             _tokenId
         );
         _addMember(_id, identityCommitment);
+
+        nftToAddress[msg.sender] = _tokenId;
 
         emit VoterAdded(
             msg.sender,
@@ -135,9 +139,9 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 _pollId,
         uint256[8] calldata proofIc
     ) external override {
-        require(polls[_pollId].endEpoch > block.timestamp);
-        require(contributors[_pollId][pk].status);
-        require(msg.sender == RELAYER);
+        require(polls[_pollId].endEpoch > block.timestamp, "EPOCH ENDED");
+        require(contributors[_pollId][pk].status, "NOT CONTRIBUTOR");
+        require(msg.sender == RELAYER, "NOT RELAYER");
 
         contributors[_pollId][pk].voteCount++;
 
@@ -157,6 +161,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
     ) external override {
         require(polls[pollId].endEpoch < block.timestamp, "EPOCH NOT ENDED");
         require(nftAddress == nftToken);
+        require(nftToAddress[msg.sender] == nftId, "INVALID NFT ID");
         address owner = IERC721Transfer(nftAddress).ownerOf(nftId);
         require(owner == address(this));
         _verifyProofVC(

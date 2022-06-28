@@ -11,9 +11,11 @@ template VotingCommitment(nLevels) {
     signal input circle_id;
     signal input pk;
 
-    signal output votingCommitmentHashed;
+    signal input mRoot;
+
+    signal votingCommitmentHashed;
    
-    signal output mRoot;
+    
 
     //GENERATE VC
     component votingCommitmentHasher =  Poseidon(3);
@@ -34,10 +36,10 @@ template VotingCommitment(nLevels) {
     }
 
     //MR CONSTRAINT
-    mRoot <== merklePathVerifier.root;
+    mRoot === merklePathVerifier.root;
 
 }
 
-component main{public [circle_id, pk]} = VotingCommitment(3);
+component main{public [circle_id, pk, mRoot]} = VotingCommitment(3);
 
 

@@ -34,6 +34,10 @@ const config: HardhatUserConfig = {
       url: "https://api.s0.ps.hmny.io/",
       accounts: process.env.HARMONY_SK !== undefined ? [process.env.HARMONY_SK] : [],
     },
+    rinkeby:{
+      url: process.env.RINKEBY,
+      accounts: process.env.HARMONY_SK !== undefined ? [process.env.HARMONY_SK] : [],
+    }
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

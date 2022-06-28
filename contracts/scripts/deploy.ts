@@ -2,13 +2,19 @@ import { Contract, ContractFactory } from "ethers";
 import { ethers } from "hardhat";
 const { poseidonContract } = require("circomlibjs");
 
-let ERC20 = "0x05554873Fd557771202730E4Ad185621EE336BF5"
-let ERC721 = "0x39A72ED2E39032E000864151Ebaf1E466125a5a3"
-let SPIC = "0xE2d7Be5F3b639AaA883EB450cCF4C376013618fd"
+// let ERC20 = "0x3Cb2265F6C9946D14995Eabe62C36bcD49dbD8A0"
+// let ERC721 = "0x43615Caca188f80d0585F9c3Ace6E11B0B2489d5"
+// let SPIC = "0x9f214bc5E8f7D67dA81e07B3793B4c46aB8F64c9"
+
+let ERC20 = "0x2412a440caE9bA860a589e2a9E26568f1C986AF0"
+let ERC721 = "0xC36Bf6981D5f0D70B29353F6BEB6d208e3A6218F"
+let SPIC = "0xc60D7d4A08cC2eA904941746A4CfB7BE3747C095"
 
 
-let VC = "0xeE2D932bb05E10a710944E94d8AA58c2873ab173"
-let IC = "0xC71e5bB4515e9520c9dAD91423738394f104EeCd"
+// let VC = "0x05554873Fd557771202730E4Ad185621EE336BF5"
+// let IC = "0x7255e1A0Adc869f4bcCA9b396623d6d2DF64b5a1"
+
+// 0x2f60994080ca98A324220199B3eC42726B6e763F 0x242B792154b132C4FB662a50eEde8820e453Bf3c
 
 
 async function main() {
@@ -30,11 +36,14 @@ async function main() {
 }
 
 
+
 async function deployERC20() {
   const ERC20 = await ethers.getContractFactory("MockERC20");
   const contract = await ERC20.deploy();
 
   await contract.deployed();
+
+  // await ERC20.generateERC20("10000000000000000000000")
 
   console.log("ERC20 deployed to:", contract.address);
 }
@@ -81,6 +90,21 @@ async function mintNFT(contract: Contract) {
   await contract.mint(14);
   await contract.mint(15);
   await contract.mint(16);
+
+  await contract.mint(17);
+  await contract.mint(18);
+  await contract.mint(19);
+  await contract.mint(20);
+  await contract.mint(21);
+  await contract.mint(22);
+  await contract.mint(23);
+  await contract.mint(24);
+  await contract.mint(25);
+  await contract.mint(26);
+  await contract.mint(27);
+  await contract.mint(28);
+  await contract.mint(29);
+  await contract.mint(30);
 }
 
 async function deploySPIC() {
