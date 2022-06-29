@@ -4,16 +4,13 @@ pragma solidity ^0.8.4;
 import "../base/SemaphoreGroups.sol";
 import "../interfaces/IVerifier.sol";
 import "../interfaces/IVerifierIC.sol";
-import "hardhat/console.sol";
+
 
 contract SemaphoreVoting is SemaphoreGroups {
-    address public VERIFIER_IDENTITY = 0x2f60994080ca98A324220199B3eC42726B6e763F; //TEST NET ADDRESS
 
-    address public VERIFIER_VOTE = 0x242B792154b132C4FB662a50eEde8820e453Bf3c; //TEST NET ADDRESS
+    address public VERIFIER_IDENTITY;
 
-    // address public VERIFIER_IDENTITY = 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0;
-
-    // address public VERIFIER_VOTE = 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9;
+    address public VERIFIER_VOTE;
 
     uint256 internal ZERO_VALUE = 21663839004416932945382355908790599225266501822907911457504978515578255421292;
 
@@ -35,7 +32,7 @@ contract SemaphoreVoting is SemaphoreGroups {
         uint256 endEpochTime,
         uint8 depth
     ) internal {    
-        // console.log("Z=====================>",ZERO_VALUE);
+
 
         _createGroup(pollId, depth, ZERO_VALUE); //both of the trees are initialized
 
@@ -58,22 +55,22 @@ contract SemaphoreVoting is SemaphoreGroups {
         uint256 _pollId,
         uint256[8] calldata proofIc
     ) internal {
-        console.log("BEFORE CAST ADD VOTE");
-        _addVote(_pollId, votingCommitment);
-        console.log("AFTER CAST ADD VOTE");
 
-        _verifyProofIC(mRootIc, proofIc);
+        _addVote(_pollId, votingCommitment);
+
+
+        bool v = _verifyProofIC(mRootIc, proofIc);
+
+        require(v, "NOT VERIFIED");
 
         polls[_pollId].activeContributorsCount = polls[_pollId].activeContributorsCount + 1;
-
-        console.log(polls[_pollId].activeContributorsCount );
     }
 
     function _verifyProofIC(uint256 mRootIc, uint256[8] calldata proofIc)
         internal
         returns (bool r)
     {   
-        console.log("HELLO VERIFIER");
+
         r = IVerifierIC(VERIFIER_IDENTITY).verifyProof(
             [proofIc[0], proofIc[1]],
             [[proofIc[2], proofIc[3]], [proofIc[4], proofIc[5]]],

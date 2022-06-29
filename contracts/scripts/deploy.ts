@@ -1,4 +1,5 @@
 import { Contract, ContractFactory } from "ethers";
+import { ParamType } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 const { poseidonContract } = require("circomlibjs");
 
@@ -6,9 +7,10 @@ const { poseidonContract } = require("circomlibjs");
 // let ERC721 = "0x43615Caca188f80d0585F9c3Ace6E11B0B2489d5"
 // let SPIC = "0x9f214bc5E8f7D67dA81e07B3793B4c46aB8F64c9"
 
-let ERC20 = "0x2412a440caE9bA860a589e2a9E26568f1C986AF0"
-let ERC721 = "0xC36Bf6981D5f0D70B29353F6BEB6d208e3A6218F"
-let SPIC = "0xc60D7d4A08cC2eA904941746A4CfB7BE3747C095"
+//HAMRONY
+// let ERC20 = "0x2412a440caE9bA860a589e2a9E26568f1C986AF0"
+// let ERC721 = "0xC36Bf6981D5f0D70B29353F6BEB6d208e3A6218F"
+// let SPIC = "0x2D4796b605164197B1977340f6476C786B40cdb6"
 
 
 // let VC = "0x05554873Fd557771202730E4Ad185621EE336BF5"
@@ -16,6 +18,17 @@ let SPIC = "0xc60D7d4A08cC2eA904941746A4CfB7BE3747C095"
 
 // 0x2f60994080ca98A324220199B3eC42726B6e763F 0x242B792154b132C4FB662a50eEde8820e453Bf3c
 
+
+//RINKEBYYY
+let ERC20 = "0xBa066A3eD619E3C08788c2bd17CD634cE72f47aE"
+let ERC721 = "0x01F10f6D4D0E89690F2Bc807fEC341d765755aEC"
+let POSEIDON = "0x791B35e919f0e55436dd195DAF2202AE3395327e"
+let MT = "0x32D0467034A390a6Accdb3c2a4f27D27778eC64b"
+let SPIC = "0xa07fA3dC2b41000080D3703Ee91F531840228E86"
+let PAIRING = ""
+
+let VIC = "0xd1a608c27814c822fB8Fb1e72906a5d8ac16BD92"
+let VVN = "0x0E77bD90D0791e21147f0802C37C1C5DA3DEdF11"
 
 async function main() {
 
@@ -48,7 +61,7 @@ async function deployERC20() {
   console.log("ERC20 deployed to:", contract.address);
 }
 
-async function deployERC721()  {
+async function deployERC721() {
   const ERC20 = await ethers.getContractFactory("MockERC721");
   const contract = await ERC20.deploy();
 
@@ -60,18 +73,12 @@ async function deployERC721()  {
 
 }
 
-async function deployVerifiers() {
-  const VC = await ethers.getContractFactory("VerifierVC");
-  const IC = await ethers.getContractFactory("VerifierIC");
-  const contract1 = await VC.deploy();
-  const contract2 = await IC.deploy();
+// async function deployVerifiers() {
 
-  await contract1.deployed();
-  await contract2.deployed();
 
-  console.log(contract1.address, contract2.address);
+//   console.log(contract1.address, contract2.address);
 
-}
+// }
 
 async function mintNFT(contract: Contract) {
   await contract.mint(1);
@@ -108,7 +115,23 @@ async function mintNFT(contract: Contract) {
 }
 
 async function deploySPIC() {
-  
+  // const PairingContract = await ethers.getContractFactory("Pairing");
+  // const contractP = await PairingContract.deploy();
+  // await contractP.deployed();
+
+  // console.log(contractP.address)
+
+
+  const VC = await ethers.getContractFactory("VerifierVC");
+
+
+  const IC = await ethers.getContractFactory("VerifierIC");
+
+  const contract2 = await VC.deploy();
+  const contract1 = await IC.deploy();
+
+  await contract1.deployed();
+  await contract2.deployed();
 
   const PoseidonLibFactory = await (await getPoseidonFactory(2)).deploy()
 
@@ -123,13 +146,15 @@ async function deploySPIC() {
 
   await incrementalBinaryTreeLib.deployed()
 
+  console.log(PoseidonLibFactory.address, incrementalBinaryTreeLib.address)
+
   const ContractFactory = await ethers.getContractFactory("SPIC", {
     libraries: {
       IncrementalBinaryTree: incrementalBinaryTreeLib.address
     }
   })
 
-  const contract = await ContractFactory.deploy(ERC20, ERC721, "0xC820F9d9b6F2F1226Eeb63d9A67bD285Be4829B8", 50)
+  const contract = await ContractFactory.deploy(ERC20, ERC721, "0xC820F9d9b6F2F1226Eeb63d9A67bD285Be4829B8", 50, contract1.address, contract2.address);
 
   await contract.deployed()
 
@@ -144,8 +169,10 @@ const getPoseidonFactory = async (nInputs: number) => {
   const abiJson = poseidonContract.generateABI(nInputs);
   const abi = new ethers.utils.Interface(abiJson);
   const [signer] = await ethers.getSigners();
-  return new ethers.ContractFactory(abi, bytecode,signer);
+  return new ethers.ContractFactory(abi, bytecode, signer);
 };
+
+
 
 
 // We recommend this pattern to be able to use async/await everywhere

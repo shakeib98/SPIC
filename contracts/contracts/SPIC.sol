@@ -14,11 +14,11 @@ contract SPIC is SemaphoreVoting, ISPIC {
     address public RELAYER;
     address public OWNER;
     uint8 public constant MAX_LEAVES = 8;
-    uint8 public voterIndex = 0;
-    uint8 public votesIndex = 0;
 
     mapping(uint256 => mapping(address => Contributor)) public contributors;
     mapping(address => uint256) public nftToAddress;
+    mapping(uint256 => uint8) public voterIndex;
+    mapping(uint256 => uint8) public votesIndex;
 
     struct Contributor {
         uint8 voteCount;
@@ -61,14 +61,17 @@ contract SPIC is SemaphoreVoting, ISPIC {
         address _mockToken,
         address _nftToken,
         address _relayer,
-        uint256 _votersIncentive
+        uint256 _votersIncentive,
+        address _verifierIC,
+        address _verifierVC
     ) public {
 
         votersIncentive = _votersIncentive;
         mockToken = _mockToken;
         nftToken = _nftToken;
         RELAYER = _relayer;
-
+        VERIFIER_IDENTITY = _verifierIC;
+        VERIFIER_VOTE = _verifierVC;
 
     }
 
@@ -112,7 +115,7 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 identityCommitment,
         uint256 _tokenId
     ) external override {
-        require(nftToAddress[msg.sender] == 0, "Already a voter");
+        // require(nftToAddress[msg.sender] == 0, "Already a voter");
         require(polls[_id].startEpoch < block.timestamp);
         IERC721Transfer(nftToken).transferFrom(
             msg.sender,
@@ -128,8 +131,10 @@ contract SPIC is SemaphoreVoting, ISPIC {
             _id,
             identityCommitment,
             _tokenId,
-            voterIndex++
+            voterIndex[_id]
         );
+
+        voterIndex[_id] = voterIndex[_id] +1;
     }
 
     function castVoteExternal(
@@ -147,7 +152,9 @@ contract SPIC is SemaphoreVoting, ISPIC {
 
         castVote(mRootIc, votingCommitment, _pollId, proofIc);
 
-        emit VoteCasted(_pollId, votingCommitment, pk, votesIndex++);
+        emit VoteCasted(_pollId, votingCommitment, pk, votesIndex[_pollId]);
+
+        votesIndex[_pollId] = votesIndex[_pollId] +1;
     }
 
     function withdrawNFT(
