@@ -6,6 +6,9 @@ interface ISPIC {
     function createCircle(
         uint256 _id,
         uint256 _matchAmount,
+        uint256 voterIncentive,
+        address erc20Address,
+        address erc721Address,
         uint256 _endEpoch
     ) external;
 
@@ -27,12 +30,10 @@ interface ISPIC {
     ) external;
 
     function withdrawNFT(
-        uint256 nftId,
         uint256 votingCommitment,
         uint256 mRootVc,
         uint256 pollId,
         address pkContributor,
-        address nftAddress,
         uint256[8] calldata proofVc
     ) external;
 

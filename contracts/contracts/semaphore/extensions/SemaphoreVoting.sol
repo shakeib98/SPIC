@@ -18,8 +18,12 @@ contract SemaphoreVoting is SemaphoreGroups {
         uint256 matchAmount;
         uint256 startEpoch;
         uint256 endEpoch;
+        uint256 voterIncentive;
         address coordinator;
-        uint8 activeContributorsCount;
+        address erc20Address;
+        address erc721Address;
+        uint8 votesIndex;
+        uint8 voterIndex;
     }
 
     mapping(uint256 => Poll) public polls;
@@ -30,6 +34,9 @@ contract SemaphoreVoting is SemaphoreGroups {
         uint256 matchAmountPoll,
         uint256 startEpochTime,
         uint256 endEpochTime,
+        uint256 voterIncentive,
+        address erc20Address,
+        address erc721Address,
         uint8 depth
     ) internal {    
 
@@ -45,6 +52,12 @@ contract SemaphoreVoting is SemaphoreGroups {
         poll.startEpoch = startEpochTime;
 
         poll.endEpoch = endEpochTime;
+
+        poll.erc20Address = erc20Address;
+        
+        poll.erc721Address = erc721Address;
+
+        poll.voterIncentive = voterIncentive;
 
         polls[pollId] = poll;
     }
@@ -62,8 +75,6 @@ contract SemaphoreVoting is SemaphoreGroups {
         bool v = _verifyProofIC(mRootIc, proofIc);
 
         require(v, "NOT VERIFIED");
-
-        polls[_pollId].activeContributorsCount = polls[_pollId].activeContributorsCount + 1;
     }
 
     function _verifyProofIC(uint256 mRootIc, uint256[8] calldata proofIc)
