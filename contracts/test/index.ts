@@ -126,7 +126,9 @@ describe("SPIC", function () {
 
     const IC = poseidonJs.F.toObject(poseidonJs([IDENTITY_NULLIFIER, TRAPDOOR, SECRET]))
 
-    await tree.insert(IC);
+    console.log(IC)
+
+    await tree.insert(IC.toString());
 
     let newERC721User = await ERC721.connect(user)
 

@@ -111,8 +111,10 @@ contract SPIC is SemaphoreVoting, ISPIC {
         uint256 identityCommitment,
         uint256 _tokenId
     ) external override {
-        // require(nftToAddress[msg.sender] == 0, "Already a voter");
-        require(polls[_id].startEpoch < block.timestamp);
+
+        require(!contributors[_id][msg.sender].status, "Contributor can't become voters");
+
+        require(polls[_id].endEpoch > block.timestamp, "EPOCH ENDED");
 
         address nftAddress = polls[_id].erc721Address;
 

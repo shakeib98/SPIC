@@ -18,16 +18,16 @@ async function main() {
   // await deployERC20()
 
   //ERC721
-  // let c = await deployERC721();
+  let c = await deployERC721();
 
   //Mint
-  // await mintNFT(c)
+  await mintNFT(c)
 
   //Verifiers
   // await deployVerifiers()
 
   //SPIC
-  await deploySPIC()
+  // await deploySPIC()
 }
 
 

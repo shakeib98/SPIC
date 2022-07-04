@@ -2,7 +2,6 @@
   "packages": [
     "circuits",
     "contracts",
-    "db",
     "front-end",
     "server"
   ],

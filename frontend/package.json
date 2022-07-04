@@ -1,0 +1,53 @@
+{
+  "name": "next-web3-boilerplate",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "compile-contract-types": "typechain --target ethers-v5 --out-dir './contracts/types' './contracts/*.json'",
+    "postinstall": "yarn compile-contract-types"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@ethersproject/bignumber": "^5.5.0",
+    "@ethersproject/contracts": "^5.5.0",
+    "@ethersproject/providers": "^5.5.2",
+    "@ethersproject/units": "^5.5.0",
+    "@ethersproject/wallet": "^5.5.0",
+    "@metamask/detect-provider": "^1.2.0",
+    "@metamask/onboarding": "^1.0.1",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.8.5",
+    "@mui/x-date-pickers": "^5.0.0-alpha.6",
+    "@web3-react/core": "^6.1.9",
+    "@web3-react/injected-connector": "^6.0.7",
+    "assert": "^2.0.0",
+    "buffer": "^6.0.3",
+    "circomlibjs": "^0.1.2",
+    "constants": "^0.0.2",
+    "date-fns": "^2.28.0",
+    "ethereumjs-tx": "^2.1.2",
+    "global": "^4.4.0",
+    "next": "12.1.0",
+    "react": "17.0.2",
+    "react-copy-to-clipboard": "^5.1.0",
+    "react-dom": "17.0.2",
+    "snarkjs": "^0.4.22",
+    "swr": "^1.2.0",
+    "webpack": "^5.73.0"
+  },
+  "devDependencies": {
+    "@typechain/ethers-v5": "^9.0.0",
+    "@types/node": "^17.0.13",
+    "@types/react": "^17.0.38",
+    "eslint": "8.8.0",
+    "eslint-config-next": "12.0.9",
+    "ethers": "^5.5.3",
+    "typechain": "^7.0.0",
+    "typescript": "^4.5.5"
+  }
+}

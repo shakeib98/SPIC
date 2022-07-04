@@ -37,6 +37,10 @@ const config: HardhatUserConfig = {
     rinkeby:{
       url: process.env.RINKEBY,
       accounts: process.env.HARMONY_SK !== undefined ? [process.env.HARMONY_SK] : [],
+    },
+    polygon:{
+      url: process.env.POLYGON,
+      accounts: process.env.POLYGON_SK !== undefined ? [process.env.POLYGON_SK] : [],
     }
   },
   gasReporter: {

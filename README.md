@@ -2,6 +2,37 @@
 
 SPIC (Semaphore Protected Incentivized Community)
 
+[WEBSITE](https://spic-frontend.vercel.app/)
+
+[DEMO](https://youtu.be/tlo5mdoD-CI)
+
+## Table of Contents 
+
+- [Addresses](#address)
+- [Introduction](#introduction)
+- [Project Overview](#project-overview)
+    - [Actors](#actors)
+    - [Design](#design)
+    - [System Design](#system-design)
+- [Out Of Scopte](#out-of-scope)
+- [Run Locally](#run-locally)
+
+## Address
+
+MINT YOUR ERC20 and ERC721 while using app on testnet. 
+
+- SPIC TESTNET (RINKEBY): [0x82F2Ce19e0C1818412644C430b5a592EA738aD58](https://rinkeby.etherscan.io/address/0x82F2Ce19e0C1818412644C430b5a592EA738aD58)
+- MOCK ERC20 (RINKEBY) : [0xBa066A3eD619E3C08788c2bd17CD634cE72f47aE](https://rinkeby.etherscan.io/address/0x82F2Ce19e0C1818412644C430b5a592EA738aD58)
+- MOCK ERC721 (RINKEBY) : [0x01F10f6D4D0E89690F2Bc807fEC341d765755aEC](https://rinkeby.etherscan.io/address/0x01F10f6D4D0E89690F2Bc807fEC341d765755aEC)
+- RINKEBY FAUCET : [FAUCET](https://faucet.rinkeby.io/)
+
+
+- SPIC MAINNET (POLYGON): [0x07091125FF27b9f4fE312Ff4940cf3fEc36B38FB](https://polygonscan.com/address/0x07091125FF27b9f4fE312Ff4940cf3fEc36B38FB)
+- MOCK ERC20 (POLYGON) : [0x53A9a2E4b5BDd3567B3A689050b9beE7F6F1C974](https://polygonscan.com/address/0x53A9a2E4b5BDd3567B3A689050b9beE7F6F1C974)
+- MOCK ERC721 (POLYGON) : [0xFAC0D24db149b79cA0bd9781E1eBA7B30a7A8160](https://polygonscan.com/address/0xFAC0D24db149b79cA0bd9781E1eBA7B30a7A8160)
+
+* You can mint your NFT and Tokens on mainnet as well and on testnet both. Testnet URL is not live yet. So only polygon mainnet can be used with 8 mints of epoch. 
+
 ## Introduction:
 
 This project has extended the idea of Coordinape. Coordinape is a DAO tool that is used to reward community incentives, grants, and payroll through community derived voting process. 
@@ -72,7 +103,7 @@ The purpose of the circuits is:
     - Merkle path
     - Path indices
 - Public parameters
-    - none
+    - root
 
 *voting_nullifier.circom* :
 - Private parameters:
@@ -82,6 +113,7 @@ The purpose of the circuits is:
 - Public parameters:
     - circle_id
     - pk
+    - root
 
 **Contract** :
 The purpose of the contract is:
@@ -118,6 +150,55 @@ As described in above section.
 - Resolving off-chain collusion issues
 - Resolving the selection of members through vouching process on discord
 - There’s a limitation right now on how many members can vote, in future it has to be generalized. Right now the depth of tree is 3 (8 leaves, voting and identity)
+
+## Run Locally
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/shakeib98/SPIC.git
+```
+
+### Run circuits
+
+To run cicuits, go inside the `circuits` folder:
+
+```bash
+cd circuits
+```
+
+Then, follow the intructions in the [README file](/circuits/README.md) in the `circuits` folder.
+
+### Run contracts
+
+To run contracts, go inside the `contracts` folder:
+
+```bash
+cd contracts
+```
+
+Then, follow the intructions in the [README file](/contracts/README.md) in the `contracts` folder.
+
+### Run front-end
+
+To run the frontend, go inside the `front-end` folder:
+
+```bash
+cd front-end
+```
+
+### Run server
+
+To run the relayer, go inside the `server` folder:
+
+```bash
+cd server
+```
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
 
 
 
