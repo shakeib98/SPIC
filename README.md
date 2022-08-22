@@ -4,7 +4,7 @@ SPIC (Semaphore Protected Incentivized Community)
 
 [WEBSITE](https://spic-frontend.vercel.app/)
 
-[DEMO](https://youtu.be/tlo5mdoD-CI)
+[DEMO](https://youtu.be/YEfPC22YyTw)
 
 ## Table of Contents 
 
