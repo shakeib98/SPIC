@@ -28,6 +28,7 @@ const nextConfig = {
         fs: false,
         buffer: require.resolve("buffer"),
         global: require.resolve("global"),
+        readline: require.resolve("readline"),
       }
       return config
     }

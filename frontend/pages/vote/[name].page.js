@@ -19,7 +19,7 @@ import { MerkleTree } from "../../classes/merkletree";
 import { PoseidonHasher } from "../../classes/poseidonHasher";
 import Services from "../../classes/fetch";
 import { becomeVoter, castVote } from "../../services";
-import ERC721_ABI from "../../contracts/ERC721.json";
+import { useToast } from "@chakra-ui/toast";
 
 const buildPoseidon = require("circomlibjs").buildPoseidon;
 
@@ -58,6 +58,7 @@ function Index() {
   const { account, library } = useWeb3React();
 
   const spic = useSpicContract();
+  const toast = useToast();
 
   let [identity, setIdentity] = useState({
     nullifier: "",
@@ -67,8 +68,8 @@ function Index() {
 
   useEffect(() => {
     if (name) fetchData();
-    if (account && CIRCLE_ID.current) fetchVotersCount();
-  }, [account, name, CIRCLE_ID.current]);
+    // if (account && CIRCLE_ID.current) fetchVotersCount();
+  }, [account, name]);
 
   // useEffect(() => {
   //   if (!votingTree.current && !identityTree.current) {
@@ -82,9 +83,9 @@ function Index() {
       console.log("circle id ---", CIRCLE_ID.current);
       console.log("circle id type ---", typeof CIRCLE_ID.current);
       const index = await Services.Post("/getIndex", {
-        CIRCLE_ID: CIRCLE_ID.current,
+        CIRCLE_ID: name,
       });
-      const polls = await spic.polls(CIRCLE_ID.current);
+      const polls = await spic.polls(name);
 
       console.log("pollsss ---", polls);
 
@@ -95,52 +96,16 @@ function Index() {
   };
 
   const fetchData = async () => {
-    const publicCircles = await getStorageItem("publicCircles");
-
-    const contributerData = [];
-    const filteredCircle = publicCircles.filter((el) => el.id === name);
-
-    if (filteredCircle.length) {
-      CIRCLE_ID.current = filteredCircle[0].id;
-      filteredCircle.length
-        ? filteredCircle[0].users.forEach((el) => {
-            if (el.Contributers) {
-              const data = {
-                Contributer: el.Contributers,
-                Action: (
-                  <span
-                    style={{ cursor: "pointer", fontWeight: "bolder" }}
-                    onClick={() =>
-                      el.Contributers.toString().toLowerCase() ===
-                      account?.toString().toLowerCase()
-                        ? onGetReward(el.Contributers)
-                        : onToggleCastVoteModal(el.Contributers)
-                    }
-                  >
-                    {el.Contributers.toString().toLowerCase() ===
-                    account?.toString().toLowerCase()
-                      ? "Get Reward"
-                      : "Vote"}
-                  </span>
-                ),
-              };
-              contributerData.push(data);
-            }
-          })
-        : null;
-      setVoteTable(contributerData);
-      setTable(filteredCircle[0]);
-    }
+    const circleData = await Services.Get("/circle/" + name);
+    console.log("circle data got ---", circleData);
+    setTable(circleData.data[0]);
   };
 
   const onBecomeVoterClick = async () => {
     try {
-      const data = await getStorageItem("publicCircles");
-      let filtered = data ? data.filter((el) => el.id === name) : [];
-
       if (!account) {
         openToast("Connect to Metamask to become a voter!!");
-      } else if (getTime(new Date(filtered[0].epoch.to)) < Date.now()) {
+      } else if (getTime(new Date(table.epochTo)) < Date.now()) {
         openToast("Epoch has ended!!");
       } else if (!nft) {
         openToast("Please enter NFT id to continue.");
@@ -148,21 +113,7 @@ function Index() {
         setLoader(true);
         console.log("got tree ---", votingTree);
         const NFT_ID = nft;
-        const getVotingDetails = await getStorageItem("votingDetails");
-        // const isVoter = getVotingDetails.length
-        //   ? getVotingDetails.findIndex((el) => {
-        //       console.log("inside index --", el);
-        //       return (
-        //         el.voter_address.toString().toLowerCase() ===
-        //           account.toString().toLowerCase() &&
-        //         el.circle_id === CIRCLE_ID.current
-        //       );
-        //     })
-        //   : -1;
 
-        // console.log("is voter --", isVoter);
-
-        // if (isVoter == -1) {
         const poseidonJs = await buildPoseidon();
         const identityLocal = await createIdentity();
 
@@ -179,9 +130,8 @@ function Index() {
         console.log("IC ---", IC);
         console.log("identity Tree ---", identityTree);
 
-
         await becomeVoter({
-          CIRCLE_ID,
+          CIRCLE_ID: name,
           IC,
           library,
           account,
@@ -191,21 +141,11 @@ function Index() {
           openToast,
         });
 
-        await fetchVotersCount();
+        await fetchData();
 
-        const votingDetails = {
-          nft_id: NFT_ID,
-          circle_id: CIRCLE_ID.current,
-          voter_address: account,
-          receiver_address: "",
-          votingNullifier: "",
-          withdrawn: false,
-        };
-        getVotingDetails.push(votingDetails);
-        const rootSPIC = await spic.groups(CIRCLE_ID.current);
+        const rootSPIC = await spic.groups(name);
 
-        console.log("root spics ---", (rootSPIC.root).toString());
-        await setStorageItem("votingDetails", getVotingDetails);
+        console.log("root spics ---", rootSPIC.root.toString());
         setIsVoterCompleted(true);
         // toggleBecomeVoterModal();
         openToast("You have successfully became a voter :)");
@@ -224,29 +164,13 @@ function Index() {
 
   const onVoteClick = async () => {
     try {
-      const data = await getStorageItem("publicCircles");
-      let filtered = data ? data.filter((el) => el.id === name) : [];
 
-      if (getTime(new Date(filtered[0].epoch.to)) < Date.now()) {
+      if (getTime(new Date(table.epochTo)) < Date.now()) {
         openToast("Epoch has ended!!");
       } else {
         setLoader(true);
         console.log("identity parameters ---", identity);
-        const getVotingDetails = await getStorageItem("votingDetails");
-
-        // const isVoter = getVotingDetails.length
-        //   ? getVotingDetails.findIndex(
-        //       (el, i) =>
-        //         el.voter_address === account &&
-        //         el.circle_id === CIRCLE_ID.current
-        //     )
-        //   : -1;
-
-        // console.log("is voter --", isVoter);
-
-        // if (isVoter >= 0 && getVotingDetails[isVoter].receiver_address) {
-        //   openToast("You have already casted a vote.");
-        // } else if (isVoter >= 0) {
+       
         const poseidonJs = await buildPoseidon();
         const { nullifier, trapdoor, secret } = identity;
 
@@ -255,7 +179,7 @@ function Index() {
         const votingNullifier = poseidonJs.F.toObject(
           poseidonJs([
             nullifier,
-            CIRCLE_ID.current,
+            name,
             contributer.toString().trim(),
           ])
         );
@@ -266,19 +190,22 @@ function Index() {
 
         const OnVoteResponse = await castVote({
           spic,
-          CIRCLE_ID,
+          name,
           contributer,
           identity,
           votingNullifier,
         });
-        await fetchVotersCount();
+        await fetchData();
 
         if (OnVoteResponse) {
           // getVotingDetails[isVoter].receiver_address = contributer;
           // getVotingDetails[isVoter].votingNullifier = votingNullifier;
           // await setStorageItem("votingDetails", getVotingDetails);
 
-          openToast(`You have successfully casted a vote to ${contributer}`);
+          openToast(
+            `You have successfully casted a vote to ${contributer}`,
+            true
+          );
           onToggleCastVoteModal();
         }
         // } else {
@@ -295,37 +222,23 @@ function Index() {
 
   const withdrawNFT = async () => {
     try {
-      const data = await getStorageItem("publicCircles");
-      let filtered = data ? data.filter((el) => el.id === name) : [];
-
-      if (getTime(new Date(filtered[0].epoch.to)) < Date.now()) {
+      if (getTime(new Date(table.epochTo)) > Date.now()) {
         openToast("Epoch has not ended yet!!");
       }
-      if (account) {
+      else if (account) {
         setLoader(true);
         const poseidonJs = await buildPoseidon();
-        const getVotingDetails = await getStorageItem("votingDetails");
 
-        const isVoter = getVotingDetails.length
-          ? getVotingDetails.findIndex(
-              (el, i) =>
-                el.voter_address === account &&
-                el.circle_id === CIRCLE_ID.current
-            )
-          : -1;
-        // if (isVoter >= 0 && getVotingDetails[isVoter].receiver_address) {
         const { nullifier, trapdoor, secret } = identity;
         const votingNullifier = poseidonJs.F.toObject(
           poseidonJs([
             nullifier,
-            CIRCLE_ID.current,
+            name,
             contributer.toString().trim(),
           ])
         );
-        // const contributer = getVotingDetails[isVoter].receiver_address;
-        // const votingNullifier = getVotingDetails[isVoter].votingNullifier;
         const res1 = await Services.Post("/withdraw", {
-          CIRCLE_ID: CIRCLE_ID.current,
+          CIRCLE_ID: name,
           votingNullifier,
         });
         console.log("res1 ---", res1);
@@ -333,7 +246,7 @@ function Index() {
           identityNullifier: nullifier.toString(),
           merklePath: res1.data[0].path_elements,
           pathIndices: res1.data[0].path_index,
-          circle_id: CIRCLE_ID.current.toString(),
+          circle_id: name.toString(),
           pk: contributer,
           mRoot: BigNumber.from(res1.data[0].root).toString(),
         };
@@ -354,18 +267,18 @@ function Index() {
         const res = await spic.withdrawNFT(
           votingNullifier,
           BigNumber.from(res1.data[0].root).toString(),
-          CIRCLE_ID.current,
+          name,
           contributer,
           proofForFunction
         );
         console.log("ress of withdraw ---", res);
         await res.wait();
-        await fetchVotersCount();
-
+        await fetchData();
+        togglewithdrawNftModal()
         // getVotingDetails[isVoter].withdrawn = true;
         // await setStorageItem("votingDetails", getVotingDetails);
         openToast(
-          `NFT ID: ${getVotingDetails[isVoter].nft_id}, has been successfully withdrawn.`
+          `NFT has been successfully withdrawn.`
         );
         // }
         // else {
@@ -386,16 +299,12 @@ function Index() {
 
   const onGetReward = async () => {
     try {
-      const data = await getStorageItem("publicCircles");
-
-      let filtered = data ? data.filter((el) => el.id === name) : [];
-
-      if (getTime(new Date(filtered[0].epoch.to)) < Date.now()) {
+      if (getTime(new Date(table.epochTo)) < Date.now()) {
         openToast("Epoch has not ended yet!!");
       } else {
-        const res = await spic.receiveCompensation(CIRCLE_ID.current);
+        const res = await spic.receiveCompensation(name);
         await res.wait();
-        openToast("You have successfully received the compensation.");
+        openToast("You have successfully received the compensation.", true);
         console.log("resss ---", res);
       }
     } catch (e) {
@@ -443,9 +352,13 @@ function Index() {
     setOpen(false);
   };
 
-  const openToast = (text) => {
-    setMessage(text);
-    handleClick();
+  const openToast = (text, success) => {
+    toast({
+      description: text,
+      status: success ? "success" : "info",
+      duration: 4000,
+      isClosable: true,
+    });
   };
 
   const onChangeIdentity = (e) => {
@@ -496,6 +409,8 @@ function Index() {
     onVoteClick,
     loader,
     openToast,
+    account,
+    onGetReward
   };
   return (
     <>

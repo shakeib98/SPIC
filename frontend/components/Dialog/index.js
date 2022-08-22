@@ -1,32 +1,69 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Loader from "../progress";
 
 export default function FormDialog(props) {
+  console.log("props of dialog ---", props);
   return (
-    <div>
-      <Dialog open={props.open} onClose={props.handleClose}>
-        <DialogTitle style={{ fontWeight: "bold" }}>{props?.title}</DialogTitle>
-        <DialogContent>{props.children && props.children}</DialogContent>
-        <DialogActions>
+    <Modal isOpen={props.open} onClose={props.handleClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader style={{ fontWeight: "bold" }}>{props?.title}</ModalHeader>
+        <ModalBody>{props.children && props.children}</ModalBody>
+        <ModalFooter>
           {props.loader ? (
-            <Loader style={{marginRight:"20px",marginBottom:"10px"}} />
+            <Loader style={{ marginRight: "20px", marginBottom: "10px" }} />
           ) : (
             <>
-              <Button onClick={props.handleClose}>Cancel</Button>
-              <Button onClick={props.handleSubmit}>
+              <Button mr={3} onClick={props.handleClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme={"red"}
+                bg={"red.400"}
+                _hover={{ bg: "red.500" }}
+                onClick={props.handleSubmit}
+              >
                 {props.submitLabel ? props.submitLabel : "Add"}
               </Button>
             </>
           )}
-        </DialogActions>
-      </Dialog>
-    </div>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
+
+// function VerticallyCenter() {
+//   const { isOpen, onOpen, onClose } = useDisclosure()
+
+//   return (
+//     <>
+//       <Button onClick={onOpen}>Trigger modal</Button>
+
+//       <Modal onClose={onClose} isOpen={isOpen} isCentered>
+//         <ModalOverlay />
+//         <ModalContent>
+//           <ModalHeader>Modal Title</ModalHeader>
+//           <ModalCloseButton />
+//           <ModalBody>
+//             <Lorem count={2} />
+//           </ModalBody>
+//           <ModalFooter>
+//             <Button onClick={onClose}>Close</Button>
+//           </ModalFooter>
+//         </ModalContent>
+//       </Modal>
+//     </>
+//   )
+// }

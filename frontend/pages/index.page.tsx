@@ -1,144 +1,86 @@
-import { Button, Chip } from "@mui/material";
-import { useWeb3React } from "@web3-react/core";
-import { format, parseISO } from "date-fns";
+import {
+  Container,
+  Stack,
+  Flex,
+  Heading,
+  Text,
+  Button,
+} from "@chakra-ui/react";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import Services from "../classes/fetch";
-import Container from "../components/container";
-import { getStorageItem, setStorageItem } from "../util";
+import myGif from "../public/earth/world.gif";
 
 function Home() {
-  const [isUserDataExist, setUserDataBool] = useState(false);
-  const [userCircles, setUserCircles] = useState([]);
-
-  const { account, library } = useWeb3React();
   const router = useRouter();
-
-  const isConnected = typeof account === "string" && !!library;
-
-  const setInitialData = async () => {
-    const circleData = await getStorageItem("circleData");
-    await setStorageItem("circleData", circleData ? circleData : {});
-    const publicCircles = await getStorageItem("publicCircles");
-    await setStorageItem("publicCircles", publicCircles ? publicCircles : []);
-    const getVotingDetails = await getStorageItem("votingDetails");
-    await setStorageItem(
-      "votingDetails",
-      getVotingDetails ? getVotingDetails : []
-    );
-  };
-
-  const fetchUserInfo = async () => {
-    const res = await Services.Get("/");
-    const data = await getStorageItem("circleData");
-    // const publicCircles = await getStorageItem("publicCircles");
-    const circles = data[account] ? data[account] : [];
-    console.log("circlesss -->", circles);
-    if (data && data[account]) {
-      setUserDataBool(true);
-    }
-    setUserCircles(circles);
-  };
-
-  useEffect(() => {
-    console.log("library -->", library);
-    setInitialData();
-    fetchUserInfo();
-  }, [account]);
-
   return (
     <div>
-      <Container>
-        {isConnected && (
-          <>
-            <h1 style={{ textAlign: "center" }}>Welcome</h1>
-            {!isUserDataExist ? (
-              <>
-                {" "}
-                <p>{`This wallet isn't associated with a circle.`}</p>
-                <p>
-                  {`If you are supposed to be part of a circle already,
-                        contact your circle's admin to make sure they added this
-                        address`}
-                  : {account}
-                </p>
-                <p>Or, create a new circle.</p>
-              </>
-            ) : (
-              <>
-                <p>Hey {account}, welcome back start managing your circles,</p>
-                <p>or explore other organizations.</p>
-              </>
-            )}
-            <div style={{ textAlign: "center" }}>
-              <Button
-                style={{ marginRight: "15px" }}
-                variant="contained"
-                onClick={() => router.push("/explore")}
+      <Container maxW="1200">
+        <Stack
+          align={"center"}
+          spacing={{ base: 8, md: 10 }}
+          py={{ base: 20, md: 28 }}
+          direction={{ base: "column", md: "row" }}
+        >
+          <Stack flex={1} spacing={{ base: 5, md: 10 }}>
+            <Heading
+              lineHeight={1.1}
+              fontWeight={600}
+              fontSize={{ base: "3xl", sm: "4xl", lg: "5xl" }}
+            >
+              <Text
+                as={"span"}
+                position={"relative"}
+                _after={{
+                  content: "''",
+                  width: "full",
+                  height: "30%",
+                  position: "absolute",
+                  bottom: 1,
+                  left: 0,
+                  bg: "red.400",
+                  zIndex: -1,
+                }}
               >
-                Explore Organizations
-              </Button>
+                Introducing SPIC,
+              </Text>
+              <br />
+              <Text as={"span"} color={"red.400"}>
+                Semaphore Protected Incentivized Community
+              </Text>
+            </Heading>
+            <Text color={"gray.500"}>
+              This project has extended the idea of Coordinape. Coordinape is a
+              DAO tool that is used to reward community incentives, grants, and
+              payroll through community derived voting process.
+            </Text>
+            <Stack
+              spacing={{ base: 4, sm: 6 }}
+              direction={{ base: "column", sm: "row" }}
+            >
               <Button
-                variant="contained"
-                onClick={() => router.push("/circle")}
+                rounded={"full"}
+                size={"lg"}
+                fontWeight={"normal"}
+                px={6}
+                colorScheme={"red"}
+                bg={"red.400"}
+                _hover={{ bg: "red.500" }}
+                onClick={() => router.push("/dashboard")}
               >
-                Start a Circle
+                Get started
               </Button>
-            </div>
-            <div>
-              <h3>{`Manage your circles:`}</h3>
-              {!!userCircles.length ? (
-                userCircles.map((el) => {
-                  console.log("el ---", el);
-                  // const isAdmin = el.user.filter(
-                  //   (els) => els.Contributers === account && els.Admin === "Yes"
-                  // );
-
-                  return (
-                    // eslint-disable-next-line react/jsx-key
-                    <div
-                      style={{
-                        padding: "30px",
-                        backgroundColor: "#efefef",
-                        borderRadius: 10,
-                        marginBottom: "20px",
-                      }}
-                    >
-                      <div style={{ display: "inline-block", width: "30%" }}>
-                        <h2>{el.user.circleName} Circle</h2>
-                        <h5>{el.user.organizationName} Organization</h5>
-                      </div>
-                      <div style={{ display: "inline-block", width: "40%" }}>
-                        <p>
-                          Epoch: {format(parseISO(el.epoch.from), "MM/dd/yyyy")}{" "}
-                          to {format(parseISO(el.epoch.to), "MM/dd/yyyy")}
-                        </p>
-                      </div>
-                      <div style={{ display: "inline-block", width: "30%" }}>
-                        <Chip
-                          onClick={() => router.push("/admin/" + el.user.id)}
-                          label="Manage"
-                          variant="outlined"
-                        />
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div
-                  style={{
-                    padding: "30px",
-                    backgroundColor: "#efefef",
-                    borderRadius: 10,
-                    marginBottom: "20px",
-                  }}
-                >
-                  <p style={{ textAlign: "center" }}>No circles found</p>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+            </Stack>
+          </Stack>
+          <Flex
+            flex={1}
+            justify={"center"}
+            align={"center"}
+            position={"relative"}
+            w={"full"}
+          >
+            <Image src={myGif} alt="my gif" height={10000} width={10000} />
+          </Flex>
+        </Stack>
       </Container>
     </div>
   );

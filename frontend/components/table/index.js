@@ -1,11 +1,5 @@
 import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import {TableContainer, Table, Thead, Tr, Th, Td, Tbody} from "@chakra-ui/react"
 import format from "date-fns/format";
 import { parseISO } from "date-fns";
 
@@ -15,42 +9,42 @@ export default function BasicTable(props) {
   return (
     <TableContainer component={Paper} style={{ marginBottom: "20px" }}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
+        <Thead>
+          <Tr>
             {props.data &&
               Object.keys(props.data[0]).map((data, i) => {
                 return (
-                  <TableCell key={i} align="center">
+                  <Th key={i} align="center">
                     {data}
-                  </TableCell>
+                  </Th>
                 );
               })}
-          </TableRow>
-        </TableHead>
+          </Tr>
+        </Thead>
         {props.data && (
-          <TableBody>
+          <Tbody>
             {
               props?.data?.map((row, i) => (
-                <TableRow
+                <Tr
                   key={i}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   {props.data &&
                     Object.keys(props.data[0]).map((data, i) => {
                       return (
-                        <TableCell
+                        <Td
                           key={i}
                           align="center"
                           component="th"
                           scope="row"
                         >
                           {Object.keys(props.data[0]).includes("To") ? format(parseISO(row[data]), "MM/dd/yyyy") : row[data]}
-                        </TableCell>
+                        </Td>
                       );
                     })}
-                </TableRow>
+                </Tr>
               ))}
-          </TableBody>
+          </Tbody>
         )}
       </Table>
     </TableContainer>

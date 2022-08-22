@@ -16,7 +16,7 @@ export const becomeVoter = async ({
   openToast,
 }) => {
   try {
-    const index = await spic.polls(CIRCLE_ID.current);
+    const index = await spic.polls(CIRCLE_ID);
     const erc721 = new Contract(
       index.erc721Address,
       ERC721_ABI,
@@ -24,11 +24,7 @@ export const becomeVoter = async ({
     );
     console.log("erc ---", erc721);
     console.log("IC before request ---",IC)
-    const res1 = await Services.Post("/becomeVoter", {
-      CIRCLE_ID: CIRCLE_ID.current,
-      IC,
-    });
-    console.log("RES ===", res1);
+
     // const inserted = await identityTree.current.insert(IC);
     
     // debugger
@@ -38,12 +34,18 @@ export const becomeVoter = async ({
     const approved = await erc721.approve(spic.address, NFT_ID);
     await approved.wait();
     // openToast("Becoming a voter...");
-    const res = await spic.becomeVoter(CIRCLE_ID.current, IC, NFT_ID);
+    const res = await spic.becomeVoter(CIRCLE_ID, IC, NFT_ID);
     await res.wait();
-    const polls = await spic.polls(CIRCLE_ID.current)
+    const res1 = await Services.Post("/becomeVoter", {
+      CIRCLE_ID: CIRCLE_ID,
+      IC,
+    });
+    console.log("RES ===", res1);
+    const polls = await spic.polls(CIRCLE_ID)
     const res2 = await Services.Post("/saveIndex", {
       IC,
-      index: polls.voterIndex - 1
+      index: polls.voterIndex - 1,
+      CIRCLE_ID
     });
     // await setStorageItem("NFT_ID", NFT_ID);
   } catch (e) {
@@ -54,7 +56,7 @@ export const becomeVoter = async ({
 export const castVote = async ({
   spic,
   votingNullifier,
-  CIRCLE_ID,
+  name,
   contributer,
   identity,
 }) => {
@@ -67,7 +69,7 @@ export const castVote = async ({
       secret,
       contributer,
       votingNullifier,
-      CIRCLE_ID: CIRCLE_ID.current,
+      CIRCLE_ID: name,
     };
 
     const res = await Services.Post("/", body);

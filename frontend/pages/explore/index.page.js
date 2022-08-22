@@ -4,6 +4,7 @@ import ethers from "ethers"
 import { useEffect, useState } from "react";
 import { getStorageItem, truncateAddress } from "../../util";
 import { useRouter } from "next/router";
+import Services from "../../classes/fetch";
 
 
 function Index() {
@@ -16,16 +17,17 @@ function Index() {
     },[])
 
     const fetchCircles = async () => {
-        const publicCircles = await getStorageItem("publicCircles");
-        setCircles(publicCircles)
+        const publicCircles = await Services.Get("/getAllCircles")
+        console.log("public circles ---",publicCircles.data[0])
+        setCircles(publicCircles.data[0])
     }
 
-    const createACircle = (name) => {
+    const navigateToVotePage = (name) => {
         router.push("/vote/"+name)
     }
 
     const props = {
-        createACircle,
+        navigateToVotePage,
         circles
     }
 

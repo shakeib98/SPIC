@@ -1,5 +1,5 @@
-// export const baseUrl = "https://spic-server.herokuapp.com";
-export const baseUrl = "http://localhost:3001";
+export const baseUrl = "https://spic-server.herokuapp.com";
+// export const baseUrl = "http://localhost:3001";
 
 export default class Services {
   static Get = async (route: string) => {

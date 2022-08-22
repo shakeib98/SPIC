@@ -14,3 +14,14 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.globe {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  cursor: grabbing;
+}
+
+.rdtPicker {
+  background: var(--chakra-colors-gray-800) !important;
+}
